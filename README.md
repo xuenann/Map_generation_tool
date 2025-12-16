@@ -1,0 +1,2 @@
+# Map_generation_tool
+这是一个基于Django框架开发的Web应用，主要功能是帮助用户将上传的csv文件（或文件夹）转换为可视化的交互式地图。
