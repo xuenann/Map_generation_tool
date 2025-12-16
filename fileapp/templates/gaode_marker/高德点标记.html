@@ -1,0 +1,244 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>自适应显示多个点标记</title>
+    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"/>
+    <style>
+        html, body, #container {
+            height: 100%;
+            width: 100%;
+        }
+
+        .amap-icon img{
+            width: 25px;
+            height: 34px;
+        }
+    </style>
+</head>
+<body>
+<div id="container"></div>
+
+<div class="input-card">
+    <h4>地图自适应</h4>
+    <input id="setFitView" type="button" class="btn" value="地图自适应显示" />
+</div>
+<div class="info">
+    <div id="centerCoord"></div>
+    <div id="tips"></div>
+</div>
+<script type="text/javascript"
+        src="https://webapi.amap.com/maps?v=1.4.15&key= c0ffe5d8f12e85d62c3ed7b0e4835a45"></script>
+<script type="text/javascript">
+    var satellite = new AMap.TileLayer.Satellite();
+    var roadNet = new AMap.TileLayer.RoadNet();
+    var map = new AMap.Map('container', {
+        resizeEnable: true,
+        center: [116.397428, 39.90923],
+        zoom: 13,
+        layers:[
+                satellite,
+                roadNet
+         ]
+    });
+
+    map.clearMap();  // 清除地图覆盖物
+
+    var markers = [{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.89515,26.668592]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.894684,26.668367]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.818565,26.670546]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.81588,26.681128]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.61067,26.633266]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.85387,26.4758]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.61095,26.633486]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.370476,26.57179]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.825516,26.659582]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.25605,26.613249]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.37099,26.571556]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.81921,26.678068]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.81568,26.681011]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.857185,26.570448]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.30991,26.558043]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.56615,26.618618]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.60251,26.581905]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.847206,26.488247]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.62024,26.64805]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.42827,26.563051]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.83279,26.489464]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.855995,26.570635]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.94184,26.528793]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.81869,26.671915]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.60261,26.581964]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.73919,26.580318]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.82947,26.488571]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.824066,26.48955]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.08638,26.49955]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.79677,26.789366]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.604225,26.623314]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.65052,26.679764]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.89426,26.669256]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.102234,26.504328]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.89515,26.668592]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.818565,26.670546]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.84737,26.488611]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.815636,26.680696]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.102036,26.504398]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.60519,26.600046]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.30991,26.558043]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.93184,26.554708]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.895325,26.668612]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.60605,26.581596]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.79677,26.789366]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.8954,26.668991]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.60217,26.578527]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.37094,26.571535]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.65052,26.679764]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.89426,26.669256]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.65104,26.584703]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.89412,26.66912]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.85681,26.570549]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.40635,26.575712]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.85681,26.570549]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.61067,26.633266]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.60609,26.581652]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.86645,26.45546]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.894684,26.668367]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.894035,26.668716]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.102036,26.504398]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.65032,26.67971]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.61095,26.633486]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.60169,26.621414]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.08638,26.49955]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.37099,26.571556]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.894035,26.668716]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.460014,26.561186]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.8952,26.668406]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.65042,26.679724]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.90798,26.555122]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.82368,26.489721]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.81908,26.678425]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.37099,26.571556]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.85404,26.652845]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.33173,26.357546]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.90808,26.555136]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.79558,26.548656]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.60697,26.6351]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.56613,26.618498]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.81745,26.903728]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.67203,26.749884]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.8164,26.902445]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.79457,26.548906]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.60354,26.57642]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.85495,26.515518]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.606285,26.58198]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.37063,26.571795]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.54184,26.61327]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.38412,26.576199]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.41939,26.563456]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.828514,26.48842]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.60534,26.605877]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.84242,26.556337]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.5965,26.578169]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.71384,26.588608]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.817474,26.903826]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.54184,26.61327]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.73896,26.580359]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.52348,26.60188]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.79473,26.549406]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.48562,26.58573]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.6066,26.63423]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.08637,26.499605]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.02207,26.48445]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.60733,26.62389]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.33867,26.353107]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.65052,26.67975]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.875015,26.572683]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.44492,26.560871]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.856895,26.570383]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.24555,26.615202]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.44478,26.560577]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.81138,26.539677]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.81339,26.538038]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.72419,26.589464]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.737335,26.582525]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.58608,26.617718]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.602554,26.58218]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.85701,26.570335]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.6702,26.570875]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.7859,26.546064]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.3706,26.571726]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.88186,26.566967]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.84806,26.559074]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.44565,26.562042]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.79665,26.548721]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.81298,26.5387]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.371,26.57158]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.606705,26.579315]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.01457,26.48742]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.813705,26.538368]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.81575,26.625208]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.83971,26.577978]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.848305,26.5589]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.76882,26.587149]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.02459,26.483952]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.61112,26.633753]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.250725,26.616009]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.79456,26.549767]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.67434,26.576221]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.787865,26.59882]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.722855,26.58937]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.79469,26.549294]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.61013,26.632536]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.79456,26.549767]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.56635,26.618784]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.818375,26.62451]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.01532,26.493341]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.79444,26.548712]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.60663,26.62964]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.61114,26.633757]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.72324,26.589567]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.72295,26.589588]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.787865,26.59882]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.0243,26.484074]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.81298,26.5387]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.01532,26.493341]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.102,26.504398]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.815636,26.680696]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.89457,26.669683]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.77105,26.584026]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.82833,26.660433]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.90763,26.5552]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.01731,26.487164]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.81672,26.644573]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.65482,26.584934]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.634415,26.60171]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.81666,26.644464]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.90765,26.55519]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.90654,26.556105]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.6036,26.576433]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.60241,26.580112]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.73889,26.580381]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.42964,26.561779]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.894585,26.66863]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.62391,26.658194]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.42876,26.564384]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.81568,26.680595]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.71344,26.588482]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.84749,26.48846]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.60723,26.63534]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.85689,26.57047]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.623856,26.658674]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.81835,26.646318]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.85689,26.57047]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.856674,26.47642]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.102,26.504398]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.82942,26.48902]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.81591,26.680885]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.21262,26.565569]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.87506,26.572147]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.601685,26.621414]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.82852,26.487717]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.10578,26.505602]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.81832,26.67386]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.60237,26.58008]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.94199,26.529203]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.02707,26.483572]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.77105,26.584026]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.84749,26.48846]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.81611,26.625748]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.81881,26.624252]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.82656,26.487295]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.829285,26.48835]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.60702,26.63513]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.85336,26.47583]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.101746,26.504513]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.94199,26.529203]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.831116,26.494165]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.1021,26.504377]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.81565,26.680616]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.60169,26.621414]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.52296,26.601171]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.65087,26.679996]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.85282,26.485357]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.844345,26.480394]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.8465,26.481895]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.25663,26.612902]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.87509,26.572702]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.33978,26.352495]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.85545,26.571236]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.01363,26.513556]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.85282,26.485357]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.816025,26.680725]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.60214,26.578526]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.85756,26.491833]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.606094,26.581635]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.5663,26.618708]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.65034,26.679771]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.853806,26.653336]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.44479,26.559832]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.89468,26.66872]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.459564,26.561354]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.10578,26.505602]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.89389,26.669329]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.37048,26.57177]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.89468,26.66872]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.1021,26.504377]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.63466,26.601631]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.602745,26.581549]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.606514,26.579165]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.79471,26.549482]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.89431,26.669262]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.428566,26.561266]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.541374,26.613188]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.66226,26.559107]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.90817,26.55515]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.37084,26.57167]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.2126,26.565659]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.37048,26.57177]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.87167,26.573072]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.844345,26.480394]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.8465,26.481895]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.25663,26.612902]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.89431,26.669262]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.60627,26.626009]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.61115,26.633846]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.44479,26.559832]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.815765,26.68145]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.60299,26.581093]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.67007,26.570795]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.72355,26.589643]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.857,26.570368]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.61115,26.633846]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.90817,26.55515]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.89389,26.669329]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.855316,26.514997]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.38085,26.574688]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.18106,26.542694]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.086334,26.499348]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.853806,26.653336]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.81351,26.537674]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.37051,26.571756]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.79467,26.549612]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.37064,26.571674]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.62145,26.593533]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.60683,26.579424]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.84844,26.56062]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.67025,26.57108]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.84844,26.56062]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.98121,26.549038]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.59821,26.624847]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.61363,26.637596]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.60989,26.632275]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.67025,26.57108]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.786224,26.546328]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.56607,26.61856]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.37079,26.571732]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.613556,26.637833]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.61112,26.633753]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.370926,26.57155]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.817085,26.90305]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.67,26.57029]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.37058,26.571735]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.61112,26.633753]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.848045,26.55855]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.98116,26.549122]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.63459,26.601652]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [102.01456,26.487305]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.8482,26.558565]},{ icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png', position: [101.85717,26.570442]},];
+
+    // 添加一些分布不均的点到地图上,地图上添加三个点标记，作为参照
+    markers.forEach(function(marker) {
+        new AMap.Marker({
+            map: map,
+            //icon: marker.icon,
+            position: [marker.position[0], marker.position[1]],
+            content: marker.markerContent,
+            offset: new AMap.Pixel(-13, -30)
+        });
+    });
+
+    var center = map.getCenter();
+
+    var centerText = '当前中心点坐标：' + center.getLng() + ',' + center.getLat();
+    document.getElementById('tips').innerHTML = '';
+	var marker2 = new AMap.Marker({
+		position: new AMap.LngLat(116.39, 39.9),   //
+		title: '矿山'
+	});
+    // 添加事件监听, 使地图自适应显示到合适的范围
+    AMap.event.addDomListener(document.getElementById('setFitView'), 'click', function() {
+        var newCenter = map.setFitView();
+   
+        
+    });
+	
+	map.on('click', onClick);
+	function onClick(e){
+    console.log(e.lnglat.lat);
+	console.log(e.lnglat.lng);
+	var timestamp = Date.parse(new Date());
+	document.getElementById('tips').innerHTML = "坐标："+"@#@"+GPS.gcj_decrypt_exact(e.lnglat.lat,e.lnglat.lng);
+	map.remove(marker2)
+	marker2= new AMap.Marker({
+		position: new AMap.LngLat(e.lnglat.lng, e.lnglat.lat),   
+		offset: new AMap.Pixel(-13, -30),
+		icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-2.png',
+		title: '矿山'
+	});
+	map.add(marker2)
+}
+
+var GPS = {
+    PI : 3.14159265358979324,
+    x_pi : 3.14159265358979324 * 3000.0 / 180.0,
+    delta : function (lat, lon) {
+        // Krasovsky 1940
+        //
+        // a = 6378245.0, 1/f = 298.3
+        // b = a * (1 - f)
+        // ee = (a^2 - b^2) / a^2;
+        var a = 6378245.0; //  a: 卫星椭球坐标投影到平面地图坐标系的投影因子。
+        var ee = 0.00669342162296594323; //  ee: 椭球的偏心率。
+        var dLat = this.transformLat(lon - 105.0, lat - 35.0);
+        var dLon = this.transformLon(lon - 105.0, lat - 35.0);
+        var radLat = lat / 180.0 * this.PI;
+        var magic = Math.sin(radLat);
+        magic = 1 - ee * magic * magic;
+        var sqrtMagic = Math.sqrt(magic);
+        dLat = (dLat * 180.0) / ((a * (1 - ee)) / (magic * sqrtMagic) * this.PI);
+        dLon = (dLon * 180.0) / (a / sqrtMagic * Math.cos(radLat) * this.PI);
+        return {'lat': dLat, 'lon': dLon};
+    },
+
+    //WGS-84 to GCJ-02
+    gcj_encrypt : function (wgsLat, wgsLon) {
+        if (this.outOfChina(wgsLat, wgsLon))
+            return {'lat': wgsLat, 'lon': wgsLon};
+
+        var d = this.delta(wgsLat, wgsLon);
+        return {'lat' : wgsLat + d.lat,'lon' : wgsLon + d.lon};
+    },
+    //GCJ-02 to WGS-84
+    gcj_decrypt : function (gcjLat, gcjLon) {
+        if (this.outOfChina(gcjLat, gcjLon))
+            return {'lat': gcjLat, 'lon': gcjLon};
+
+        var d = this.delta(gcjLat, gcjLon);
+        return {'lat': gcjLat - d.lat, 'lon': gcjLon - d.lon};
+    },
+    //GCJ-02 to WGS-84 exactly
+    gcj_decrypt_exact : function (gcjLat, gcjLon) {
+        var initDelta = 0.01;
+        var threshold = 0.000000001;
+        var dLat = initDelta, dLon = initDelta;
+        var mLat = gcjLat - dLat, mLon = gcjLon - dLon;
+        var pLat = gcjLat + dLat, pLon = gcjLon + dLon;
+        var wgsLat, wgsLon, i = 0;
+        while (1) {
+            wgsLat = (mLat + pLat) / 2;
+            wgsLon = (mLon + pLon) / 2;
+            var tmp = this.gcj_encrypt(wgsLat, wgsLon)
+            dLat = tmp.lat - gcjLat;
+            dLon = tmp.lon - gcjLon;
+            if ((Math.abs(dLat) < threshold) && (Math.abs(dLon) < threshold))
+                break;
+
+            if (dLat > 0) pLat = wgsLat; else mLat = wgsLat;
+            if (dLon > 0) pLon = wgsLon; else mLon = wgsLon;
+
+            if (++i > 10000) break;
+        }
+        //console.log(i);
+        return wgsLon+"@#@"+wgsLat+"@#@"+wgsLon+","+wgsLat;
+    },
+    //GCJ-02 to BD-09
+    bd_encrypt : function (gcjLat, gcjLon) {
+        var x = gcjLon, y = gcjLat;
+        var z = Math.sqrt(x * x + y * y) + 0.00002 * Math.sin(y * this.x_pi);
+        var theta = Math.atan2(y, x) + 0.000003 * Math.cos(x * this.x_pi);
+        bdLon = z * Math.cos(theta) + 0.0065;
+        bdLat = z * Math.sin(theta) + 0.006;
+        return {'lat' : bdLat,'lon' : bdLon};
+    },
+    //BD-09 to GCJ-02
+    bd_decrypt : function (bdLat, bdLon) {
+        var x = bdLon - 0.0065, y = bdLat - 0.006;
+        var z = Math.sqrt(x * x + y * y) - 0.00002 * Math.sin(y * this.x_pi);
+        var theta = Math.atan2(y, x) - 0.000003 * Math.cos(x * this.x_pi);
+        var gcjLon = z * Math.cos(theta);
+        var gcjLat = z * Math.sin(theta);
+        return {'lat' : gcjLat, 'lon' : gcjLon};
+    },
+    //WGS-84 to Web mercator
+    //mercatorLat -> y mercatorLon -> x
+    mercator_encrypt : function(wgsLat, wgsLon) {
+        var x = wgsLon * 20037508.34 / 180.;
+        var y = Math.log(Math.tan((90. + wgsLat) * this.PI / 360.)) / (this.PI / 180.);
+        y = y * 20037508.34 / 180.;
+        return {'lat' : y, 'lon' : x};
+        /*
+         if ((Math.abs(wgsLon) > 180 || Math.abs(wgsLat) > 90))
+         return null;
+         var x = 6378137.0 * wgsLon * 0.017453292519943295;
+         var a = wgsLat * 0.017453292519943295;
+         var y = 3189068.5 * Math.log((1.0 + Math.sin(a)) / (1.0 - Math.sin(a)));
+         return {'lat' : y, 'lon' : x};
+         //*/
+    },
+    // Web mercator to WGS-84
+    // mercatorLat -> y mercatorLon -> x
+    mercator_decrypt : function(mercatorLat, mercatorLon) {
+        var x = mercatorLon / 20037508.34 * 180.;
+        var y = mercatorLat / 20037508.34 * 180.;
+        y = 180 / this.PI * (2 * Math.atan(Math.exp(y * this.PI / 180.)) - this.PI / 2);
+        return {'lat' : y, 'lon' : x};
+        /*
+         if (Math.abs(mercatorLon) < 180 && Math.abs(mercatorLat) < 90)
+         return null;
+         if ((Math.abs(mercatorLon) > 20037508.3427892) || (Math.abs(mercatorLat) > 20037508.3427892))
+         return null;
+         var a = mercatorLon / 6378137.0 * 57.295779513082323;
+         var x = a - (Math.floor(((a + 180.0) / 360.0)) * 360.0);
+         var y = (1.5707963267948966 - (2.0 * Math.atan(Math.exp((-1.0 * mercatorLat) / 6378137.0)))) * 57.295779513082323;
+         return {'lat' : y, 'lon' : x};
+         //*/
+    },
+    // two point's distance
+    distance : function (latA, lonA, latB, lonB) {
+        var earthR = 6371000.;
+        var x = Math.cos(latA * this.PI / 180.) * Math.cos(latB * this.PI / 180.) * Math.cos((lonA - lonB) * this.PI / 180);
+        var y = Math.sin(latA * this.PI / 180.) * Math.sin(latB * this.PI / 180.);
+        var s = x + y;
+        if (s > 1) s = 1;
+        if (s < -1) s = -1;
+        var alpha = Math.acos(s);
+        var distance = alpha * earthR;
+        return distance;
+    },
+    outOfChina : function (lat, lon) {
+        if (lon < 72.004 || lon > 137.8347)
+            return true;
+        if (lat < 0.8293 || lat > 55.8271)
+            return true;
+        return false;
+    },
+    transformLat : function (x, y) {
+        var ret = -100.0 + 2.0 * x + 3.0 * y + 0.2 * y * y + 0.1 * x * y + 0.2 * Math.sqrt(Math.abs(x));
+        ret += (20.0 * Math.sin(6.0 * x * this.PI) + 20.0 * Math.sin(2.0 * x * this.PI)) * 2.0 / 3.0;
+        ret += (20.0 * Math.sin(y * this.PI) + 40.0 * Math.sin(y / 3.0 * this.PI)) * 2.0 / 3.0;
+        ret += (160.0 * Math.sin(y / 12.0 * this.PI) + 320 * Math.sin(y * this.PI / 30.0)) * 2.0 / 3.0;
+        return ret;
+    },
+    transformLon : function (x, y) {
+        var ret = 300.0 + x + 2.0 * y + 0.1 * x * x + 0.1 * x * y + 0.1 * Math.sqrt(Math.abs(x));
+        ret += (20.0 * Math.sin(6.0 * x * this.PI) + 20.0 * Math.sin(2.0 * x * this.PI)) * 2.0 / 3.0;
+        ret += (20.0 * Math.sin(x * this.PI) + 40.0 * Math.sin(x / 3.0 * this.PI)) * 2.0 / 3.0;
+        ret += (150.0 * Math.sin(x / 12.0 * this.PI) + 300.0 * Math.sin(x / 30.0 * this.PI)) * 2.0 / 3.0;
+        return ret;
+    }
+};
+</script>
+</body>
+</html>

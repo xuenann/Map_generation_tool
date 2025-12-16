@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>自适应显示多个点标记</title>
+    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"/>
+    <style>
+        html, body, #container {
+            height: 100%;
+            width: 100%;
+        }
+
+        .amap-icon img{
+            width: 25px;
+            height: 34px;
+        }
+    </style>
+</head>
+<body>
+<div id="container"></div>
+
+<div class="input-card">
+    <h4>地图自适应</h4>
+    <input id="setFitView" type="button" class="btn" value="地图自适应显示" />
+</div>
+<div class="info">
+    <div id="centerCoord"></div>
+    <div id="tips"></div>
+</div>
+<script type="text/javascript"
+        src="https://webapi.amap.com/maps?v=1.4.15&key=c0ffe5d8f12e85d62c3ed7b0e4835a45"></script>
+<script type="text/javascript">
+    var satellite = new AMap.TileLayer.Satellite();
+    var roadNet = new AMap.TileLayer.RoadNet();
+    var map = new AMap.Map('container', {
+        resizeEnable: true,
+        center: [116.397428, 39.90923],
+        zoom: 13,
+        layers:[
+                satellite,
+                roadNet
+         ]
+    });
+
+    map.clearMap();  // 清除地图覆盖物
+
+    var markers = [

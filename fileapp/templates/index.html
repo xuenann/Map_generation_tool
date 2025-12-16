@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>地图生成工具</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 10px;
+            background-color: #f5f5f5;
+        }
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        div {
+            margin-bottom: 10px;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            margin-right: 8px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        input[type="text"] {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 60%;
+            font-size: 13px;
+        }
+        /* 新增的输入框区域样式 */
+        #input-form {
+            border: 2px solid #4CAF50;
+        }
+        #input-form button {
+            background-color: #008CBA;
+        }
+        #input-form button:hover {
+            background-color: #0073aa;
+        }
+        /* 调整子模块样式 */
+        #sub_module {
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        #sub_module h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        /* 调整单选按钮样式 */
+        input[type="radio"] {
+            margin-right: 5px;
+            margin-left: 10px;
+        }
+        /* 调整下拉框样式 */
+        select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <h2>地图生成工具</h2>
+
+    <!-- 新增的输入框和按钮区域 -->
+    <!-- <div id="input-form">
+        <input type="text" id="user-input" placeholder="请输入内容..." />
+        <button onclick="submitInput()">提交内容</button>
+        <p id="response-message" style="margin-top: 10px; color: #666;"></p>
+    </div> -->
+
+    <!-- 选择文件 -->
+    <div>
+        <button onclick="selectFile()">选择文件</button>
+        <input type="text" id="file_path" readonly />
+        <input type="file" id="file_input" style="display:none" onchange="uploadFile()">
+    </div>
+
+    <!-- 选择文件夹 -->
+    <div>
+        <button onclick="selectFolder()">选择文件夹</button>
+        <input type="text" id="folder_path" readonly />
+        <input type="file" id="folder_input" webkitdirectory directory multiple style="display:none" onchange="uploadFolder()">
+    </div>
+
+    <!-- 是否忽略第一行 -->
+    <div>
+        <label>是否忽略第一行：</label>
+        <input type="radio" name="ignore_first_row" value="yes" checked> 是
+        <input type="radio" name="ignore_first_row" value="no"> 否
+    </div>
+
+    <!-- 选择坐标系 -->
+    <div>
+        <label>请选择坐标系：</label>
+        <input type="radio" name="coordinate_system" value="wgs84" checked> WGS84
+        <input type="radio" name="coordinate_system" value="gcj02"> GCJ02
+        <input type="radio" name="coordinate_system" value="bd09"> BD09
+        <input type="radio" name="coordinate_system" value="MapBar"> MapBar
+    </div>
+
+    <!-- 地图类型选择 -->
+    <div>
+        <label>请选择地图类型：</label>
+        <select id="map_type" onchange="showSubModule()">
+            <option value="gaode_marker">高德点标记</option>
+            <option value="gaode_line">高德线图</option>
+            <option value="baidu_marker">百度点标记</option>
+        </select>
+    </div>
+
+    <!-- 动态子模块区域 -->
+    <div id="sub_module" style="border: 1px solid #ddd; padding: 15px; border-radius: 5px;">
+        <!-- 高德点标记子模块 -->
+        <div id="gaode_marker_module">
+            <h3>高德点标记设置</h3>
+            <div style="margin-bottom: 15px;">
+                <label>样例查看：</label>
+                <a href="/templates/gaode_marker/高德点标记.html" target="_blank">查看高德点标记样例</a>
+            </div>
+            <div style="margin-bottom: 10px;">
+                <label for="longitude_column">输入经度列：</label>
+                <input type="text" id="longitude_column" placeholder="如：1（从0开始数）" style="width: 200px;">
+            </div>
+            <div>
+                <label for="latitude_column">输入纬度列：</label>
+                <input type="text" id="latitude_column" placeholder="如：2（从0开始数）" style="width: 200px;">
+            </div>
+        </div>
+        
+        <!-- 高德线图子模块 -->
+        <div id="gaode_line_module" style="display: none;">
+            <h3>高德线图设置</h3>
+            <div style="margin-bottom: 10px;">
+                <label>样例查看：</label>
+                <a href="/templates/gaode_line/高德线图.html" target="_blank">查看高德线图样例</a>
+            </div>
+            <div style="margin-bottom: 10px;">
+                <label for="gaode_line_longitude_column">输入经度列：</label>
+                <input type="text" id="gaode_line_longitude_column" placeholder="如：1（从0开始数）" style="width: 200px;">
+            </div>
+            <div style="margin-bottom: 10px;">
+                <label for="gaode_line_latitude_column">输入纬度列：</label>
+                <input type="text" id="gaode_line_latitude_column" placeholder="如：2（从0开始数）" style="width: 200px;">
+            </div>
+            <div style="margin-bottom: 10px;">
+                <label for="gaode_line_sort_column">输入排序列：</label>
+                <input type="text" id="gaode_line_sort_column" placeholder="需要以哪列排序，通常为时间列（可空）" style="width: 200px;">
+            </div>
+        </div>
+        
+        <!-- 百度点图子模块 -->
+        <div id="baidu_marker_module" style="display: none;">
+            <h3>百度点标记设置</h3>
+            <div style="margin-bottom: 10px;">
+                <label>样例查看：</label>
+                <a href="/templates/baidu_marker/百度点标记.html" target="_blank">查看百度点标记样例</a>
+            </div>
+            <div style="margin-bottom: 10px;">
+                <label for="baidu_longitude_column">输入经度列：</label>
+                <input type="text" id="baidu_longitude_column" placeholder="如：1（从0开始数）" style="width: 200px;">
+            </div>
+            <div style="margin-bottom: 10px;">
+                <label for="baidu_latitude_column">输入纬度列：</label>
+                <input type="text" id="baidu_latitude_column" placeholder="如：2（从0开始数）" style="width: 200px;">
+            </div>
+            <div style="margin-bottom: 10px;">
+                <label for="baidu_marker_column">输入标记列：</label>
+                <input type="text" id="baidu_marker_column" placeholder="点标记想要展示内容的列" style="width: 200px;">
+            </div>
+        </div>
+    </div>
+
+    <!-- 生成地图 -->
+    <div>
+        <button onclick="generateMap()">生成地图</button>
+        <input type="text" id="map_result" readonly />
+    </div>
+
+    <!-- 生成的HTML文件列表 -->
+    <div id="generated_files" style="display: none;">
+        <h3>生成的地图文件：</h3>
+        <ul id="files_list"></ul>
+    </div>
+
+    <script>
+        function selectFile() {
+            document.getElementById("file_input").click();
+        }
+
+        function uploadFile() {
+            let fileInput = document.getElementById("file_input");
+            let file = fileInput.files[0];
+
+            let formData = new FormData();
+            formData.append("file", file);
+
+            fetch("/upload_file", {
+                method: "POST",
+                body: formData
+            }).then(resp => resp.json()).then(data => {
+                document.getElementById("file_path").value = data.filename;
+                // 清空文件夹路径，确保只能选择一个
+                document.getElementById("folder_path").value = "";
+            });
+        }
+
+        function selectFolder() {
+            document.getElementById("folder_input").click();
+        }
+
+        function uploadFolder() {
+            let folderInput = document.getElementById("folder_input");
+            let formData = new FormData();
+
+            for (let f of folderInput.files) {
+                formData.append("folder", f);
+            }
+
+            fetch("/upload_folder", {
+                method: "POST",
+                body: formData
+            }).then(resp => resp.json()).then(data => {
+                document.getElementById("folder_path").value = data.saved_files.map(file => file.new_filename).join(', ');
+                // 清空文件路径，确保只能选择一个
+                document.getElementById("file_path").value = "";
+            });
+        }
+
+        // 显示子模块函数
+        function showSubModule() {
+            // 获取选中的地图类型
+            const mapType = document.getElementById("map_type").value;
+            
+            // 隐藏所有子模块
+            document.getElementById("gaode_marker_module").style.display = "none";
+            document.getElementById("gaode_line_module").style.display = "none";
+            document.getElementById("baidu_marker_module").style.display = "none";
+            
+            // 显示选中的子模块
+            document.getElementById(mapType + "_module").style.display = "block";
+        }
+
+        function generateMap() {
+            // 获取用户选择的选项
+            const ignoreFirstRow = document.querySelector('input[name="ignore_first_row"]:checked').value;
+            const coordinateSystem = document.querySelector('input[name="coordinate_system"]:checked').value;
+            const mapType = document.getElementById("map_type").value;
+            
+            // 获取上传的文件信息
+            const file = document.getElementById("file_path").value;
+            const folder = document.getElementById("folder_path").value;
+            
+            // 准备发送到后端的数据
+            const data = {
+                ignore_first_row: ignoreFirstRow,
+                coordinate_system: coordinateSystem,
+                map_type: mapType,
+                file_path: file,
+                folder_path: folder
+            };
+            
+            // 根据地图类型获取不同的参数
+            if (mapType === "gaode_marker") {
+                // 获取高德点标记的经纬度列信息
+                const longitudeColumn = document.getElementById("longitude_column").value;
+                const latitudeColumn = document.getElementById("latitude_column").value;
+                data.longitude_column = longitudeColumn;
+                data.latitude_column = latitudeColumn;
+            } else if (mapType === "baidu_marker") {
+                // 获取百度点图的经纬度列和标记列信息
+                const baiduLongitudeColumn = document.getElementById("baidu_longitude_column").value;
+                const baiduLatitudeColumn = document.getElementById("baidu_latitude_column").value;
+                const baiduMarkerColumn = document.getElementById("baidu_marker_column").value;
+                data.longitude_column = baiduLongitudeColumn;
+                data.latitude_column = baiduLatitudeColumn;
+                data.marker_column = baiduMarkerColumn;
+            } else if (mapType === "gaode_line") {
+                // 获取高德线图的经纬度列和排序列信息
+                const gaodeLineLongitudeColumn = document.getElementById("gaode_line_longitude_column").value;
+                const gaodeLineLatitudeColumn = document.getElementById("gaode_line_latitude_column").value;
+                const gaodeLineSortColumn = document.getElementById("gaode_line_sort_column").value;
+                data.longitude_column = gaodeLineLongitudeColumn;
+                data.latitude_column = gaodeLineLatitudeColumn;
+                data.sort_column = gaodeLineSortColumn;
+            }
+            
+            // 发送请求到后端
+            fetch("/generate_map", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data)
+            })
+            .then(resp => resp.json())
+            .then(data => {
+                document.getElementById("map_result").value = data.message;
+                
+                // 显示生成的文件列表
+                const filesList = document.getElementById("files_list");
+                filesList.innerHTML = "";
+                
+                if (data.generated_files && Array.isArray(data.generated_files)) {
+                    if (data.generated_files.length > 0) {
+                        data.generated_files.forEach(file => {
+                            const li = document.createElement("li");
+                            const a = document.createElement("a");
+                            a.href = file.url;
+                            a.target = "_blank";
+                            a.textContent = file.name;
+                            li.appendChild(a);
+                            filesList.appendChild(li);
+                        });
+                    } else {
+                        const li = document.createElement("li");
+                        li.textContent = "没有生成任何文件";
+                        filesList.appendChild(li);
+                    }
+                    
+                    // 显示文件列表区域
+                    document.getElementById("generated_files").style.display = "block";
+                } else {
+                    console.log("没有收到生成的文件列表数据");
+                    document.getElementById("generated_files").style.display = "none";
+                }
+            })
+            .catch(error => {
+                document.getElementById("map_result").value = "生成失败: " + error.message;
+                console.error("生成地图请求失败:", error);
+            });
+        }
+
+        // 新增的提交输入内容函数
+        function submitInput() {
+            let userInput = document.getElementById("user-input").value;
+            let responseMessage = document.getElementById("response-message");
+
+            if (userInput.trim() === "") {
+                responseMessage.textContent = "请输入内容！";
+                responseMessage.style.color = "#f44336";
+                return;
+            }
+
+            fetch("/submit_input", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ input: userInput })
+            })
+            .then(resp => resp.json())
+            .then(data => {
+                responseMessage.textContent = "后端已收到内容: " + data.received_input;
+                responseMessage.style.color = "#4CAF50";
+                // 清空输入框
+                document.getElementById("user-input").value = "";
+            })
+            .catch(error => {
+                responseMessage.textContent = "提交失败: " + error.message;
+                responseMessage.style.color = "#f44336";
+            });
+        }
+    </script>
+</body>
+</html>

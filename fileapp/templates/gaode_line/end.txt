@@ -1,0 +1,6 @@
+strokeWeight:5,
+strokeColor: 'red'});
+</script>
+</body>
+
+</html>

@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>细线 ThinLine</title>
+    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"/>
+    <style>
+        body,
+        html,
+        #container {
+            margin: 0;
+            width: 100%;
+            height: 100%
+        }
+    </style>
+</head>
+
+
+
+<body>
+
+    <div id="container"></div>
+
+    <div class="input-card">
+        <input id="setFitView" type="button" class="btn" value="地图自适应显示" />
+    </div>
+    <div class="info">
+        <div id="centerCoord"></div>
+        <div id="tips"></div>
+    </div>
+
+
+
+    <script
+        src="https://webapi.amap.com/maps?v=1.4.15&key=309f07ac6bc48160e80b480ae511e1e9&plugin=Map3D,AMap.DistrictSearch"></script>
+
+    <script>
+        var satellite = new AMap.TileLayer.Satellite();
+        var roadNet = new AMap.TileLayer.RoadNet();
+        var map = new AMap.Map('container', {
+            resizeEnable: true,
+            center: [116.397428, 39.90923],
+            zoom: 13,
+            layers:[
+                    satellite,
+                    roadNet
+            ]
+        });
+
+
+
+        AMap.event.addDomListener(document.getElementById('setFitView'), 'click', function() {
+        var newCenter = map.setFitView();
+   
+        
+        });
+
+
+new AMap.Polyline({
+map,
+path: [
