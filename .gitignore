@@ -3,6 +3,6 @@ fileapp/uploads/
 
 # python执行编译文件
 fileapp/__pycache__/
-fileapp/map_function/__pycache__
-fileapp/migrations/__pycache__
-myproject/__pycache__
+fileapp/map_function/__pycache__/
+fileapp/migrations/__pycache__/
+myproject/__pycache__/
