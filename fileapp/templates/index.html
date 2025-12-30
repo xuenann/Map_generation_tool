@@ -76,6 +76,28 @@
             border-radius: 4px;
             font-size: 13px;
         }
+        /* 地图结果文本框样式 */
+        #map_result {
+            width: 60%;
+            height: 100px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: monospace;
+            resize: vertical;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* 生成地图按钮区域样式 */
+        .generate-map-container {
+            display: flex;
+            align-items: center;
+        }
+        .generate-map-container button {
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
@@ -191,9 +213,9 @@
     </div>
 
     <!-- 生成地图 -->
-    <div>
+    <div class="generate-map-container">
         <button onclick="generateMap()">生成地图</button>
-        <input type="text" id="map_result" readonly />
+        <textarea id="map_result" readonly></textarea>
     </div>
 
     <!-- 生成的HTML文件列表 -->
