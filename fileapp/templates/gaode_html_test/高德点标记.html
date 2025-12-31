@@ -1,0 +1,309 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>自适应显示多个点标记</title>
+    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"/>
+    <style>
+        html, body, #container {
+            height: 100%;
+            width: 100%;
+        }
+        .amap-icon img{
+            width: 15px;
+            height: 22px;
+        }
+        .custom-content-marker {
+            font-size: 14px;
+            font-weight: bold;
+        }
+        #map-features .input-item {
+            height: 2rem;
+        }
+        
+    </style>
+</head>
+<body>
+<div id="container"></div>
+
+<div class="input-card" style="width:24rem;">
+    <h4>地图自适应</h4>
+    <input id="setFitView" type="button" class="btn" value="地图自适应显示" />
+
+    <h4>设置地图当前行政区</h4>
+    <div class="input-item">
+      <input id='city-name' placeholder="北京市" type="text" style="margin-right:1rem;"><button class="btn" id="query">去指定城市</button>
+    </div>
+
+    <div class="input-item">
+      <label>卫星图层：</label>
+      <button class="btn" id="add-satellite-layer" style="margin-right:1rem;">添加卫星图层</button>
+      <button class="btn" id="remove-satellite-layer">删除卫星图层</button>
+    </div>
+    <div class="input-item">
+      <label>红色标记：</label>
+      <button class="btn" id="add-roadnet-layer" style="margin-right:1rem;">添加路网图层</button>
+      <button class="btn" id="remove-roadnet-layer">删除路网图层</button>
+    </div>
+
+    <div class="input-item">
+        <input type="checkbox" checked onclick="toggleScale(this)"/>比例尺
+        <input type="checkbox" style="margin-left:2rem;" checked id="controlBar" onclick="toggleControlBar(this)"/>工具条方向盘
+    </div>
+
+    <h4>设置地图显示要素（Features）</h4>
+    <div id="map-features">
+      <div class="input-item">
+        <input type='checkbox' name='mapStyle' value='bg' checked>区域面（bg）
+        <input type='checkbox' name='mapStyle' value='road' checked>道路（road）
+      </div>
+      <div class="input-item">
+        <input type='checkbox' name='mapStyle' value='point' checked>标注（point）
+        <input type='checkbox' name='mapStyle' value='building' checked>建筑物（building）
+      </div>
+    </div>
+
+    <div>
+        <label>图层透明度：</label><span id="opa-val"></span>
+        <br>
+        <input id="opacity" type="range" value="1" min="0" max="1" step="0.01">
+    </div>
+    
+</div>
+
+<div class="info">
+    <!-- <h4>获取地图级别与中心点坐标</h4> -->
+    <p style="font-size: 1.2rem;">当前地图级别：<span id="map-zoom">13</span></p>
+    <p style="font-size: 1.2rem;">当前地图中心点坐标：<span id="map-center">116.397428, 39.90923</span></p>
+
+    <p style="font-size: 1.2rem;">左击获取经纬度：<span id="lnglat">116.397428, 39.90923</span></p>
+
+    <!-- <h4>当前所在行政区信息</h4> -->
+    <p style="font-size: 1.2rem;"><span id="map-city"></span></p>
+
+    <!-- <div id="centerCoord"></div>
+    <div id="tips"></div> -->
+</div>
+<script type="text/javascript"
+        src="https://webapi.amap.com/maps?v=2.0&key=c0ffe5d8f12e85d62c3ed7b0e4835a45&&plugin=AMap.Scale,AMap.HawkEye,AMap.ToolBar,AMap.ControlBar"></script>
+<script type="text/javascript" src="https://a.amap.com/jsapi_demos/static/demo-center/js/jquery-1.11.1.min.js" ></script>
+<script type="text/javascript" src="https://a.amap.com/jsapi_demos/static/demo-center/js/underscore-min.js" ></script>
+<script type="text/javascript" src="https://a.amap.com/jsapi_demos/static/demo-center/js/backbone-min.js" ></script>
+<script type="text/javascript" src='https://a.amap.com/jsapi_demos/static/demo-center/js/prety-json.js'></script>
+<script src="https://a.amap.com/jsapi_demos/static/demo-center/js/demoutils.js"></script>
+<script src="https://cache.amap.com/lbs/static/es5.min.js"></script>
+<script type="text/javascript">
+    // 地图控件
+    var scale = new AMap.Scale(),
+    controlBar = new AMap.ControlBar({
+        position: {
+            top: '10px',
+            left: '10px',
+        }
+    }),
+    // 初始化地图
+    map = new AMap.Map('container', {
+        resizeEnable: true,     //是否监控地图容器尺寸变化
+        center: [116.397428, 39.90923],
+        zoom: 13,
+        viewMode: '3D',
+        pitch: 0,
+        features: ['bg', 'road', 'point', 'building'],
+    });
+    map.addControl(scale);
+    map.addControl(controlBar);
+    
+
+
+    // 获取地图中心点/级别：显示地图层级与中心点信息
+    function logMapinfo_zoom(){
+      var zoom = map.getZoom(); //获取当前地图级别
+      var center = map.getCenter(); //获取当前地图中心位置
+      document.querySelector("#map-zoom").innerText = zoom;
+      document.querySelector("#map-center").innerText = center.toString();
+    };
+    // 监听地图层级和中心变化事件
+    map.on('zoommend', logMapinfo_zoom);
+    map.on('moveend', logMapinfo_zoom);
+
+
+    //获取鼠标点击经纬度：为地图注册click事件获取鼠标点击出的经纬度坐标
+    map.on('click', function(e) {
+        document.getElementById("lnglat").innerText = e.lnglat.getLng() + ',' + e.lnglat.getLat()
+    });
+
+
+    //获取当前行政区：获取并展示当前城市信息
+    function logMapinfo_city(){
+      map.getCity(function(info){
+        // var node = new PrettyJSON.view.Node({
+        //     el: document.querySelector("#map-city"),
+        //     data: info
+        // });
+        var cityInfo = `当前所在省市区：${info.province || ''}-${info.city || ''}-${info.district || ''}`;
+        document.querySelector("#map-city").innerHTML = cityInfo;
+      });
+    }
+    // 绑定地图移动事件
+    logMapinfo_city();
+    map.on('moveend', logMapinfo_city);
+
+
+    //设置地图当前行政区：根据cityname、adcode、citycode设置地图位置
+    function gotoCity() {
+      var val = document.querySelector('#city-name').value; //可以是cityname、adcode、citycode
+      if (!val) {
+        val = "北京市";
+      }
+      map.setCity(val);
+      log.info(`已跳转至${val}`);
+    }
+    //绑定查询点击、回车事件
+    document.querySelector('#query').onclick = gotoCity;
+    document.querySelector('#city-name').onkeydown = function(e) {
+      if (e.keyCode === 13) {
+        gotoCity();
+        return false;
+      }
+      return true;
+    };
+    
+    
+    // 图层的添加与移除：构造官方卫星、路网图层
+    var satelliteLayer = new AMap.TileLayer.Satellite();
+    var roadNetLayer =  new AMap.TileLayer.RoadNet();
+    //批量添加图层
+    //map.add([satelliteLayer, roadNetLayer]);
+    // 获取建筑物选项的复选框
+    var buildingCheckbox = document.querySelector("#map-features input[value='building']");
+    //事件绑定
+    document.querySelector("#add-satellite-layer").onclick = function() {
+      map.add(satelliteLayer);
+      // 添加卫星图层时，取消选中建筑物选项
+      if (buildingCheckbox.checked) {
+        buildingCheckbox.checked = false;
+        setMapFeatures();
+      }
+    }
+    document.querySelector("#remove-satellite-layer").onclick = function() {
+      map.remove(satelliteLayer);
+      // 删除卫星图层时，选中建筑物选项
+      if (!buildingCheckbox.checked) {
+        buildingCheckbox.checked = true;
+        setMapFeatures();
+      }
+    }
+    document.querySelector("#add-roadnet-layer").onclick = function() {
+      map.add(roadNetLayer);
+    }
+    document.querySelector("#remove-roadnet-layer").onclick = function() {
+      map.remove(roadNetLayer);
+    }
+
+
+    // 地图控件:添加比例尺、工具条方向盘
+    function toggleScale(checkbox) {
+        if (checkbox.checked) {
+            scale.show();
+        } else {
+            scale.hide();
+        }
+    }
+    function toggleControlBar(checkbox) {
+        if (checkbox.checked) {
+            controlBar.show()
+        } else {
+            controlBar.hide()
+        }
+    }
+
+
+    // 地图显示要素：设置地图显示要素
+    function setMapFeatures() {
+      var features = [];
+      var inputs = document.querySelectorAll("#map-features input");
+      inputs.forEach(function(input) {
+        if (input.checked) {
+          features.push(input.value);
+        }
+      });
+      map.setFeatures(features);
+    }
+    //绑定checkbox点击事件
+    var inputs = document.querySelectorAll("#map-features input");
+    inputs.forEach(function(checkbox) {
+      checkbox.onclick = setMapFeatures;
+    });
+
+
+    // 地图透明度：
+    var opacity = 1;
+    // var satellite = new AMap.TileLayer.Satellite({
+    //     map: map,
+    //     opacity: opacity
+    // });
+    updateOpa(opacity);
+    function updateOpa(v) {
+        document.getElementById('opa-val').innerText = v;
+    }
+    function setOpacity(e) {
+      	var val = e.target.value
+        updateOpa(val);
+        satelliteLayer.setOpacity(val);
+    }
+  	document.getElementById('opacity').addEventListener('input', setOpacity);
+
+
+    //map.clearMap();  // 清除地图覆盖物
+
+    var markers = [{
+        // icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png',
+        'text': '这是一个点标记',
+        position: [116.205467, 39.907761]
+    }, {
+        // icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png',
+        'text': '这是一个点标记',
+        position: [116.368904, 39.913423]
+    }, {
+        // icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png',
+        'text': '这是一个点标记',
+        position: [116.305467, 39.807761]
+    }];
+
+    // 添加一些分布不均的点到地图上,地图上添加三个点标记，作为参照
+    markers.forEach(function(marker) {
+        new AMap.Marker({
+            map: map,
+            // title: marker.text,
+            // content: "<div class='info'>marker.text</div>",
+            icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png',
+            position: [marker.position[0], marker.position[1]],
+            offset: new AMap.Pixel(-13, -30),
+            // 设置是否可以拖拽
+            // draggable: true,
+            // cursor: 'move'
+        });
+    });
+
+    var center = map.getCenter();
+
+    // var centerText = '当前中心点坐标：' + center.getLng() + ',' + center.getLat();
+    // document.getElementById('centerCoord').innerHTML = centerText;
+    // document.getElementById('tips').innerHTML = '成功添加三个点标记，其中有两个在当前地图视野外！';
+
+    var setFitViewBtn = document.getElementById('setFitView');
+    // 添加事件监听, 使地图自适应显示到合适的范围
+    setFitViewBtn.onclick = function() {
+        // 第一个参数为空，表明用图上所有覆盖物 setFitview
+        // 第二个参数为false, 非立即执行
+        // 第三个参数设置上左下右的空白
+        map.setFitView(null, false, [150, 60, 100, 60]);
+        var newCenter = map.getCenter();
+        // document.getElementById('centerCoord').innerHTML = '当前中心点坐标：' + newCenter.toString();
+        // document.getElementById('tips').innerHTML = '通过setFitView，地图自适应显示到合适的范围内,点标记已全部显示在视野中！';
+    };
+</script>
+</body>
+</html>

@@ -5,7 +5,7 @@ https://lbs.amap.com/demo/javascript-api-v2/example/personalized-map/set-map-cot
     2. 获取地图当前行政区
     3. 设置当前地图行政区
     4. 获取鼠标点击经纬度
-    5. 地图的热点
+    5. 地图的热点（×）
 
 覆盖物与图层管理
     1. 图层的添加与移除
@@ -20,11 +20,25 @@ https://lbs.amap.com/demo/javascript-api-v2/example/personalized-map/set-map-cot
 覆盖物
     通用
         1. 根据覆盖物调整地图范围
-    点标记
+    点标记(------)
         1. 自定义点标记内容
         2. 自适应显示多个点标记
         3. 设置点的拖拽效果
         4. 设置点标注的文本标签
+    矢量图形
+        1. 绘制矢量图形
+        2. 批处理矢量图形
+    矢量覆盖物编辑
+        1. 折线编辑器
+        2. 多边形编辑器
+    信息窗体
+        1. 给多个点添加信息窗体
+    右键菜单
+        1. 默认右键菜单
+距离面积计算
+    1. 路径长度
+
+
 
 
 
@@ -42,3 +56,8 @@ https://lbs.amap.com/demo/javascript-api-v2/example/personalized-map/set-map-cot
         2. 标注和标注图层-海量点
         3. 点聚合
         4. 点聚合-包含权重信息
+    矢量图形
+        1. 折线的绘制
+        2. 弧线的绘制和编辑
+        3. 自定义折线方向箭头
+
