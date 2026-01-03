@@ -276,9 +276,14 @@
     markers.forEach(function(marker) {
         new AMap.Marker({
             map: map,
+            // 设置鼠标划过点标记显示的文字提示
             // title: marker.text,
-            // content: "<div class='info'>marker.text</div>",
-            icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png',
+            label: {
+                direction: 'top',
+                content: marker.text,
+                offset: new AMap.Pixel(0, 0),
+            },
+            icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-red.png',
             position: [marker.position[0], marker.position[1]],
             offset: new AMap.Pixel(-13, -30),
             // 设置是否可以拖拽

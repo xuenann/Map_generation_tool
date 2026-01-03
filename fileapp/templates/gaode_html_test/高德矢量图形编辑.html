@@ -1,0 +1,196 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <style>
+    html,
+    body,
+    #container {
+      width: 100%;
+      height: 100%;
+    }
+    .context_menu{
+            position: relative;
+            min-width: 12rem;
+            padding: 0;
+    }
+    .context_menu p{
+        cursor: pointer;
+        padding: 0.25rem 1.25rem;
+    }
+    .context_menu p:hover{
+        background: #ccc;
+    }
+    </style>
+    <title>椭圆的绘制和编辑</title>
+    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" />
+    <script src="https://webapi.amap.com/maps?v=2.0&key=c0ffe5d8f12e85d62c3ed7b0e4835a45&plugin=AMap.MouseTool"></script>
+    <script src="https://a.amap.com/jsapi_demos/static/demo-center/js/demoutils.js"></script>
+    <script type="text/javascript" src="https://cache.amap.com/lbs/static/addToolbar.js"></script>
+</head>
+<body>
+<div id="container"></div>
+<div class="input-card" style="width: 200px">
+   <h4 style="margin-bottom: 10px; font-weight: 600">利用mouseTool绘制覆盖物</h4>
+   <button class="btn" onclick="drawPolyline()" style="margin-bottom: 5px">绘制线段</button> 
+   <button class="btn" onclick="drawPolygon()" style="margin-bottom: 5px">绘制多边形</button> 
+   <button class="btn" onclick="drawRectangle()" style="margin-bottom: 5px">绘制矩形</button> 
+   <button class="btn" onclick="drawCircle()" style="margin-bottom: 5px">绘制圆形</button> 
+
+   <input type="button" class="button" value="显示覆盖物" onClick="showAllOverlays()"/>
+   <input type="button" class="button" value="隐藏覆盖物" onClick="hideAllOverlays()"/>
+
+</div>
+<script type="text/javascript">
+    var lnglat = new AMap.LngLat(116.397, 39.918);
+    var map = new AMap.Map("container", {
+        center: lnglat,
+        zoom: 14
+    });
+
+    // 自定义菜单类
+    
+
+    var mouseTool = new AMap.MouseTool(map)
+    // 存储所有绘制的覆盖物
+    var overlays = [];
+    // 标记当前是否正在绘制
+    var isDrawing = false;
+    // 标记当前是否有右键菜单
+    var hasContextMenu = true;
+
+    function drawPolyline () {
+      mouseTool.polyline({
+        strokeColor: "#3366FF", 
+        strokeOpacity: 1,
+        strokeWeight: 6,
+        // 线样式还支持 'dashed'
+        strokeStyle: "solid",
+        // strokeStyle是dashed时有效
+        // strokeDasharray: [10, 5],
+      })
+      isDrawing = true;
+    }
+    function drawPolygon () {
+      mouseTool.polygon({
+        strokeColor: "#FF33FF", 
+        strokeOpacity: 1,
+        strokeWeight: 6,
+        strokeOpacity: 0.2,
+        fillColor: '#1791fc',
+        fillOpacity: 0.4,
+        // 线样式还支持 'dashed'
+        strokeStyle: "solid",
+        // strokeStyle是dashed时有效
+        // strokeDasharray: [30,10],
+      })
+      isDrawing = true;
+    }
+    function drawRectangle () {
+      mouseTool.rectangle({
+        strokeColor:'red',
+        strokeOpacity:0.5,
+        strokeWeight: 6,
+        fillColor:'blue',
+        fillOpacity:0.5,
+        // strokeStyle还支持 solid
+        strokeStyle: 'solid',
+        // strokeDasharray: [30,10],
+      })
+      isDrawing = true;
+    }
+    function drawCircle () {
+      mouseTool.circle({
+        strokeColor: "#FF33FF",
+        strokeOpacity: 1,
+        strokeWeight: 6,
+        strokeOpacity: 0.2,
+        fillColor: '#1791fc',
+        fillOpacity: 0.4,
+        strokeStyle: 'solid',
+        // 线样式还支持 'dashed'
+        // strokeDasharray: [30,10],
+      })
+      isDrawing = true;
+    }
+    mouseTool.on('draw', function(event) {
+      // event.obj 为绘制出来的覆盖物对象
+      log.info(event.obj)
+      // 将绘制的覆盖物添加到数组中
+      overlays.push(event.obj);
+      log.info(overlays)
+      // 绘制完成后重置绘制状态
+      isDrawing = false;
+    })
+
+    // 显示所有覆盖物
+    function showAllOverlays() {
+      for (var i = 0; i < overlays.length; i++) {
+        overlays[i].show();
+        log.info(overlays)
+      }
+    }
+    // 隐藏所有覆盖物
+    function hideAllOverlays() {
+      for (var i = 0; i < overlays.length; i++) {
+        overlays[i].hide();
+      }
+    }
+
+
+    // 自定义右键菜单类
+    function ContextMenu(map) {
+        var me = this;
+        //地图中添加鼠标工具MouseTool插件
+        this.mouseTool = new AMap.MouseTool(map);
+        this.contextMenuPositon = null;
+
+        var content = [];
+        content.push("<div class='info context_menu'>");
+        // content.push("  <p onclick='menu.zoomMenu(0)'>缩小</p>");
+        // content.push("  <p class='split_line' onclick='menu.zoomMenu(1)'>放大</p>");
+        content.push("  <p class='split_line' onclick='menu.distanceMeasureMenu()'>距离量测</p>");
+        content.push("  <p onclick='menu.addMarkerMenu()'>添加标记</p>");
+        content.push("</div>");
+
+        //通过content自定义右键菜单内容
+        this.contextMenu = new AMap.ContextMenu({isCustom: true, content: content.join('')});
+
+        //地图绑定鼠标右击事件——弹出右键菜单
+        map.on('rightclick', function (e) {
+            me.contextMenu.open(map, e.lnglat);
+            me.contextMenuPositon = e.lnglat; //右键菜单位置
+        });
+    }
+
+    ContextMenu.prototype.distanceMeasureMenu = function () {  //右键菜单距离量测
+        this.mouseTool.rule();
+        this.contextMenu.close();
+    };
+    ContextMenu.prototype.addMarkerMenu = function () {  //右键菜单添加Marker标记
+        this.mouseTool.close();
+        var marker = new AMap.Marker({
+            map: map,
+            position: this.contextMenuPositon || map.getCenter() //基点位置
+        });
+        this.contextMenu.close();
+    };
+
+    //创建右键菜单
+    var menu = new ContextMenu(map);
+    menu.contextMenu.open(map, lnglat);
+
+    // 监听键盘ESC键，退出绘制功能
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' || e.keyCode === 27) {
+            // 按下ESC键，停止当前绘制
+            mouseTool.close();
+            isDrawing = false;
+        }
+    });
+
+</script>
+</body>
+</html>
