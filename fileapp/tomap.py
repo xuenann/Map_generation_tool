@@ -1,28 +1,32 @@
 import csv
 from . import coordinate_transform
 import os
-from .map_function import gaode_marker,baidu_marker,gaode_line
+from .map_function import gaode_marker,baidu_marker,gaode_line,gaode_big_marker,gaode_marker_agg
 
 
 coordinate_func_dict={
-        'wgs84_gaode_marker':coordinate_transform.wgs84_to_gcj02,
-        'bd09_gaode_marker':coordinate_transform.bd09_to_gcj02,
-        'mapbar_gaode_marker':coordinate_transform.mapbar_to_gcj02,
-        'wgs84_baidu_marker':coordinate_transform.wgs84_to_bd09,
-        'gcj02_baidu_marker':coordinate_transform.gcj02_to_bd09,
-        'mapbar_baidu_marker':coordinate_transform.mapbar_to_bd09,
+        'wgs84_gaode':coordinate_transform.wgs84_to_gcj02,
+        'bd09_gaode':coordinate_transform.bd09_to_gcj02,
+        'mapbar_gaode':coordinate_transform.mapbar_to_gcj02,
+        'wgs84_baidu':coordinate_transform.wgs84_to_bd09,
+        'gcj02_baidu':coordinate_transform.gcj02_to_bd09,
+        'mapbar_baidu':coordinate_transform.mapbar_to_bd09,
     }
 
 config_func_dict={
         'gaode_marker':gaode_marker.read_gaode_market_config,
         'baidu_marker':baidu_marker.read_baidu_market_config,
         'gaode_line':gaode_line.read_gaode_line_config,
+        'gaode_big_marker':gaode_big_marker.read_gaode_big_marker_config,
+        'gaode_marker_agg':gaode_marker_agg.read_gaode_marker_agg_config,
 }
 
 map_func_dict={
         'gaode_marker':gaode_marker.to_gaode_market,
         'baidu_marker':baidu_marker.to_baidu_market,
         'gaode_line':gaode_line.to_gaode_line,
+        'gaode_big_marker':gaode_big_marker.to_gaode_big_marker,
+        'gaode_marker_agg':gaode_marker_agg.to_gaode_marker_agg,
 }
 
 
@@ -116,11 +120,11 @@ def deal_data(file_path,data):
                 next(reader)
             for row in reader:
                 lat,lon=coordinate_func_dict.get(
-                    f"{data['coordinate_system']}_{data['map_type']}",lambda x,y:(x,y))(
+                    f"{data['coordinate_system']}_{data['map_type'].split('_')[0]}",lambda x,y:(x,y))(
                                 float(row[index_list['latitude_column']]),
                                 float(row[index_list['longitude_column']])) 
 
-                map_data.append({'lat':lat,'lon':lon} | {k:row[index_list[k]] for k in index_list if k not in ['latitude_column','longitude_column']})
+                map_data.append({'lat':round(lat,6),'lon':round(lon,6)} | {k:row[index_list[k]] for k in index_list if k not in ['latitude_column','longitude_column']})
                 
         if len(map_data)==0:
             return (False,'数据为空')

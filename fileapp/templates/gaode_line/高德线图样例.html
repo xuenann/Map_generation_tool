@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
-    <title>自适应显示多个点标记</title>
+    <title>高德线图样例</title>
     <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"/>
     <style>
         html, body, #container {
@@ -370,50 +370,21 @@
 
     //map.clearMap();  // 清除地图覆盖物
 
-    var markers = [{
-        // icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png',
-        title:'这是一个点标记：116.205467, 39.907761',
-        text: '这是一个点标记',
-        position: [116.205467, 39.907761]
-    }, {
-        // icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png',
-        title:'这是一个点标记：116.368904, 39.913423',
-        text: '这是一个点标记',
-        position: [116.368904, 39.913423]
-    }, {
-        // icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png',
-        title:'这是一个点标记：116.305467, 39.807761',
-        text: '这是一个点标记',
-        position: [116.305467, 39.807761]
-    }];
+    var path1 = [
+        [75.757904, 41.118117],
+        [97.375719, 27.598057],
+        [117.375719, 41.118117]
+    ];
 
-    // 添加一些分布不均的点到地图上,地图上添加三个点标记，作为参照
-    markers.forEach(function(marker) {
-        var newMarker = new AMap.Marker({
-            map: map,
-            // 设置鼠标划过点标记显示的文字提示
-            title: marker.title,
-            label: {
-                direction: 'top',
-                content: marker.text,
-                offset: new AMap.Pixel(0, 0),
-            },
-            icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png',
-            position: [marker.position[0], marker.position[1]],
-            offset: new AMap.Pixel(-13, -30),
-            // 设置是否可以拖拽
-            // draggable: true,
-            // cursor: 'move'
-        });
-        // 将初始化的点标记添加到数组中
-        allMarkers.push(newMarker);
-        // 为初始化的点标记绑定右键菜单事件
-        newMarker.on('rightclick', function (e) {
-            markerContextMenu.open(map, e.lnglat);
-            // 将当前点标记存储到全局变量中，以便删除时使用
-            currentMarker = this;
-        });
+    var polyline1 = new AMap.Polyline({
+        path: path1,            // 设置线覆盖物路径
+     	  showDir:true,
+        strokeColor: '#3d93fd',   // 线颜色
+        strokeWeight: 7           // 线宽
     });
+
+    map.add([polyline1])
+    map.setFitView()
 
     var center = map.getCenter();
 

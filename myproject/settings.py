@@ -133,3 +133,7 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+GAODE_API_KEY = 'c0ffe5d8f12e85d62c3ed7b0e4835a45'
+BAIDU_API_KEY = 'your_baidu_api_key'

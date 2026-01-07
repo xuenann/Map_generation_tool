@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
-    <title>自适应显示多个点标记</title>
+    <title>高德海量点标记样例</title>
     <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"/>
     <style>
         html, body, #container {
@@ -34,6 +34,25 @@
         }
         .context_menu p:hover{
             background: #ccc;
+        }
+
+        .amap-info-window{
+            width: 150px;
+            background: #fff;
+            border-radius: 3px;
+            padding: 3px 7px;
+            box-shadow: 0 2px 6px 0 rgba(114, 124, 245, .5);
+            position: relative;
+        }
+        .amap-info-sharp{
+            position: absolute;
+            top: 21px;
+            bottom: 0;
+            left: 50%;
+            margin-left: -8px;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 8px solid #fff;
         }
         
     </style>
@@ -105,6 +124,7 @@
 <script type="text/javascript" src="https://a.amap.com/jsapi_demos/static/demo-center/js/underscore-min.js" ></script>
 <script type="text/javascript" src="https://a.amap.com/jsapi_demos/static/demo-center/js/backbone-min.js" ></script>
 <script type="text/javascript" src='https://a.amap.com/jsapi_demos/static/demo-center/js/prety-json.js'></script>
+<script type="text/javascript" src="https://a.amap.com/jsapi_demos/static/demo-center/data/mock_position.js"></script>
 <script src="https://a.amap.com/jsapi_demos/static/demo-center/js/demoutils.js"></script>
 <script src="https://cache.amap.com/lbs/static/es5.min.js"></script>
 <script type="text/javascript">
@@ -125,7 +145,9 @@
         zoom: 13,
         viewMode: '3D',
         pitch: 0,
-        features: ['bg', 'road', 'point', 'building'],
+        showLabel: false,
+        showIndoorMap: false,
+        features: ['bg', 'road', 'building'], // point 默认不显示
     });
     map.addControl(scale);
     map.addControl(controlBar);
@@ -142,6 +164,7 @@
     map.on('zoommend', logMapinfo_zoom);
     map.on('moveend', logMapinfo_zoom);
 
+    
 
     //获取鼠标点击经纬度：为地图注册click事件获取鼠标点击出的经纬度坐标
     map.on('click', function(e) {
@@ -192,6 +215,8 @@
     //map.add([satelliteLayer, roadNetLayer]);
     // 获取建筑物选项的复选框
     var buildingCheckbox = document.querySelector("#map-features input[value='building']");
+    var pointCheckbox = document.querySelector("#map-features input[value='point']");
+    pointCheckbox.checked = false;
     //事件绑定
     document.querySelector("#add-satellite-layer").onclick = function() {
       map.add(satelliteLayer);
@@ -370,50 +395,72 @@
 
     //map.clearMap();  // 清除地图覆盖物
 
-    var markers = [{
-        // icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png',
-        title:'这是一个点标记：116.205467, 39.907761',
-        text: '这是一个点标记',
-        position: [116.205467, 39.907761]
-    }, {
-        // icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png',
-        title:'这是一个点标记：116.368904, 39.913423',
-        text: '这是一个点标记',
-        position: [116.368904, 39.913423]
-    }, {
-        // icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png',
-        title:'这是一个点标记：116.305467, 39.807761',
-        text: '这是一个点标记',
-        position: [116.305467, 39.807761]
-    }];
-
-    // 添加一些分布不均的点到地图上,地图上添加三个点标记，作为参照
-    markers.forEach(function(marker) {
-        var newMarker = new AMap.Marker({
-            map: map,
-            // 设置鼠标划过点标记显示的文字提示
-            title: marker.title,
-            label: {
-                direction: 'top',
-                content: marker.text,
-                offset: new AMap.Pixel(0, 0),
-            },
-            icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png',
-            position: [marker.position[0], marker.position[1]],
-            offset: new AMap.Pixel(-13, -30),
-            // 设置是否可以拖拽
-            // draggable: true,
-            // cursor: 'move'
+    map.on('complete', function () {
+        // 创建 AMap.LabelsLayer 图层
+        var layer = new AMap.LabelsLayer({
+            zooms: [3, 20],
+            zIndex: 1000,
+            collision: false
         });
-        // 将初始化的点标记添加到数组中
-        allMarkers.push(newMarker);
-        // 为初始化的点标记绑定右键菜单事件
-        newMarker.on('rightclick', function (e) {
-            markerContextMenu.open(map, e.lnglat);
-            // 将当前点标记存储到全局变量中，以便删除时使用
-            currentMarker = this;
+
+        // 将图层添加到地图
+        map.add(layer);
+
+        var markers = [];
+        var positions = Positions.slice(0, 3E4);
+        // var positions = [
+        //   [116.205467, 39.907761],
+        //   [116.368904, 39.913423],
+        //   [116.305467, 39.807761],
+        // ]
+
+        var icon = {
+            type: 'image',
+            image: 'https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png',
+            size: [6, 9],
+            anchor: 'bottom-center',
+        };
+
+        for (var i = 0; i < positions.length; i++) {
+            var curPosition = positions[i];
+            var curData = {
+                position: curPosition,
+                icon
+            };
+
+            var labelMarker = new AMap.LabelMarker(curData);
+
+            markers.push(labelMarker);
+
+            // 给marker绑定事件
+            labelMarker.on('mouseover', function(e){
+                var position = e.data.data && e.data.data.position;
+
+                if(position){
+                    normalMarker.setContent(
+                        '<div class="amap-info-window">'
+                            + position +
+                            '<div class="amap-info-sharp"></div>' +
+                        '</div>');
+                    normalMarker.setPosition(position);
+                    map.add(normalMarker);
+                }
+            });
+
+            labelMarker.on('mouseout', function(){
+                map.remove(normalMarker);
+            });
+        }
+        // 一次性将海量点添加到图层
+        layer.add(markers);
+        // 普通点
+        var normalMarker = new AMap.Marker({
+            anchor: 'bottom-center',
+            offset: [0, -15],
         });
     });
+
+    map.setFitView()
 
     var center = map.getCenter();
 

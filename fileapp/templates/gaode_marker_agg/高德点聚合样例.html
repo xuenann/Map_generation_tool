@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
-    <title>高德点标记样例</title>
+    <title>高德点聚合样例</title>
     <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"/>
     <style>
         html, body, #container {
@@ -12,8 +12,8 @@
             width: 100%;
         }
         .amap-icon img{
-            width: 15px;
-            height: 22px;
+            width: 20px;
+            height: 29px;
         }
         .custom-content-marker {
             font-size: 14px;
@@ -21,6 +21,19 @@
         }
         #map-features .input-item {
             height: 2rem;
+        }
+        
+        .context_menu{
+            position: relative;
+            min-width: 12rem;
+            padding: 0;
+        }
+        .context_menu p{
+            cursor: pointer;
+            padding: 0.25rem 1.25rem;
+        }
+        .context_menu p:hover{
+            background: #ccc;
         }
         
     </style>
@@ -87,15 +100,19 @@
     <div id="tips"></div> -->
 </div>
 <script type="text/javascript"
-        src="https://webapi.amap.com/maps?v=2.0&key=c0ffe5d8f12e85d62c3ed7b0e4835a45&&plugin=AMap.Scale,AMap.HawkEye,AMap.ToolBar,AMap.ControlBar"></script>
+        src="https://webapi.amap.com/maps?v=2.0&key=c0ffe5d8f12e85d62c3ed7b0e4835a45&&plugin=AMap.Scale,AMap.HawkEye,AMap.ToolBar,AMap.ControlBar,AMap.MouseTool,AMap.MarkerCluster"></script>
 <script type="text/javascript" src="https://a.amap.com/jsapi_demos/static/demo-center/js/jquery-1.11.1.min.js" ></script>
 <script type="text/javascript" src="https://a.amap.com/jsapi_demos/static/demo-center/js/underscore-min.js" ></script>
 <script type="text/javascript" src="https://a.amap.com/jsapi_demos/static/demo-center/js/backbone-min.js" ></script>
 <script type="text/javascript" src='https://a.amap.com/jsapi_demos/static/demo-center/js/prety-json.js'></script>
 <script src="https://a.amap.com/jsapi_demos/static/demo-center/js/demoutils.js"></script>
 <script src="https://cache.amap.com/lbs/static/es5.min.js"></script>
+<script src="https://a.amap.com/jsapi_demos/static/data/weight.js"></script>
 <script type="text/javascript">
     // 地图控件
+    var cluster;
+    var lnglat = new AMap.LngLat(116.397428, 39.90923);
+
     var scale = new AMap.Scale(),
     controlBar = new AMap.ControlBar({
         position: {
@@ -107,7 +124,7 @@
     map = new AMap.Map('container', {
         resizeEnable: true,     //是否监控地图容器尺寸变化
         center: [116.397428, 39.90923],
-        zoom: 13,
+        zoom: 4.5,
         viewMode: '3D',
         pitch: 0,
         features: ['bg', 'road', 'point', 'building'],
@@ -115,7 +132,6 @@
     map.addControl(scale);
     map.addControl(controlBar);
     
-
 
     // 获取地图中心点/级别：显示地图层级与中心点信息
     function logMapinfo_zoom(){
@@ -256,41 +272,161 @@
   	document.getElementById('opacity').addEventListener('input', setOpacity);
 
 
+    //自定义菜单类
+    // 标记当前是否正在绘制
+    var isDrawing = false;
+    // 存储所有点标记的数组
+    var allMarkers = [];
+    // 存储当前要删除的点标记
+    var currentMarker = null;
+    function ContextMenu(map) {
+        var me = this;
+        //地图中添加鼠标工具MouseTool插件
+        this.mouseTool = new AMap.MouseTool(map);
+        this.contextMenuPositon = null;
+        
+        var content = [];
+        content.push("<div class='info context_menu'>");
+        content.push("  <p class='split_line' onclick='menu.distanceMeasureMenu()'>距离量测</p>");
+        content.push("  <p onclick='menu.addMarkerMenu()'>添加标记</p>");
+        content.push("</div>");
+
+        //通过content自定义右键菜单内容
+        this.contextMenu = new AMap.ContextMenu({isCustom: true, content: content.join('')});
+
+        //地图绑定鼠标右击事件——弹出右键菜单
+        map.on('rightclick', function (e) {
+            if (isDrawing) {
+                me.contextMenu.close();
+                // 结束当前绘制但不关闭工具，允许继续绘制新线
+                me.mouseTool.rule();
+            } else {
+                me.contextMenu.open(map, e.lnglat);
+                me.contextMenuPositon = e.lnglat; //右键菜单位置
+            }
+        });
+    }
+
+    ContextMenu.prototype.distanceMeasureMenu = function () {  //右键菜单距离量测
+        if (isDrawing) {
+            // 如果正在绘制，先关闭当前绘制
+            this.mouseTool.close();
+        }
+        // 开始新的绘制
+        this.mouseTool.rule();
+        this.contextMenu.close();
+        // 标记当前正在绘制距离量测
+        isDrawing = true;
+    };
+
+    // 监听键盘ESC键，退出绘制功能
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' || e.keyCode === 27) {
+            // 按下ESC键，停止所有绘制
+            menu.mouseTool.close();
+            // 重置绘制状态
+            isDrawing = false;
+        }
+    });
+
+
+    //创建点标记右键菜单
+    var markerContextMenu = new AMap.ContextMenu();
+    markerContextMenu.addItem("删除点标记", function () {
+        if (currentMarker) {
+            // 从地图上移除点标记
+            map.remove(currentMarker);
+            // 从数组中移除点标记
+            var index = allMarkers.indexOf(currentMarker);
+            if (index > -1) {
+                allMarkers.splice(index, 1);
+            }
+            // 清空当前标记引用
+            currentMarker = null;
+            // 关闭右键菜单
+            markerContextMenu.close();
+        }
+    }, 0);
+    ContextMenu.prototype.addMarkerMenu = function () {  //右键菜单添加Marker标记
+        this.mouseTool.close();
+        var marker = new AMap.Marker({
+            map: map,
+            position: this.contextMenuPositon || map.getCenter(), //基点位置
+            icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-red.png',
+            offset: new AMap.Pixel(-9, -23) // 设置偏移，使标记中心点与点击位置对齐
+        });
+        // 将新创建的点标记添加到数组中
+        allMarkers.push(marker);
+        this.contextMenu.close();
+        //绑定鼠标右击事件——弹出右键菜单
+        marker.on('rightclick', function (e) {
+            markerContextMenu.open(map, e.lnglat);
+            // 将当前点标记存储到全局变量中，以便删除时使用
+            currentMarker = this;
+        });
+    };
+    //创建右键菜单
+    var menu = new ContextMenu(map);
+    menu.contextMenu.open(map, lnglat);
+
+
     //map.clearMap();  // 清除地图覆盖物
 
-    var markers = [{
-        // icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png',
-        'text': '这是一个点标记',
-        position: [116.205467, 39.907761]
-    }, {
-        // icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png',
-        'text': '这是一个点标记',
-        position: [116.368904, 39.913423]
-    }, {
-        // icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png',
-        'text': '这是一个点标记',
-        position: [116.305467, 39.807761]
-    }];
+    var gridSize = 60
+    // 数据中增加权重信息，以权重高的点为中心进行聚合
+    // 本示例中北京等城市中心点权重较高
+    // var points = [
+        // { weight: 8, lnglat:["116.408032","39.909729"], "name": '北京'},
+        // { weight: 8, lnglat:["121.461743","31.231584"], "name": '上海'},
+        // { weight: 8, lnglat:["113.265942","23.08983"], "name": '广州'},
+        // { weight: 8, lnglat:["104.059399","30.562253"], "name": '成都'},
+        // { weight: 1, lnglat: ["108.939621", "34.343147"] },
+        // { weight: 1, lnglat: ["112.985037", "23.15046"] },
+        // ...
+    // ]
+    var count = points.length;
 
-    // 添加一些分布不均的点到地图上,地图上添加三个点标记，作为参照
-    markers.forEach(function(marker) {
-        new AMap.Marker({
-            map: map,
-            // 设置鼠标划过点标记显示的文字提示
-            // title: marker.text,
-            label: {
-                direction: 'top',
-                content: marker.text,
-                offset: new AMap.Pixel(0, 0),
-            },
-            icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-red.png',
-            position: [marker.position[0], marker.position[1]],
-            offset: new AMap.Pixel(-13, -30),
-            // 设置是否可以拖拽
-            // draggable: true,
-            // cursor: 'move'
-        });
-    });
+    var _renderClusterMarker = function (context) {
+        var factor = Math.pow(context.count / count, 1 / 18);
+        var div = document.createElement('div');
+        var Hue = 180 - factor * 180;
+        var bgColor = 'hsla(' + Hue + ',100%,40%,0.7)';
+        var fontColor = 'hsla(' + Hue + ',100%,90%,1)';
+        var borderColor = 'hsla(' + Hue + ',100%,40%,1)';
+        var shadowColor = 'hsla(' + Hue + ',100%,90%,1)';
+        div.style.backgroundColor = bgColor;
+        var size = Math.round(30 + Math.pow(context.count / count, 1 / 5) * 20);
+        div.style.width = div.style.height = size + 'px';
+        div.style.border = 'solid 1px ' + borderColor;
+        div.style.borderRadius = size / 2 + 'px';
+        div.style.boxShadow = '0 0 5px ' + shadowColor;
+        div.innerHTML = context.count;
+        div.style.lineHeight = size + 'px';
+        div.style.color = fontColor;
+        div.style.fontSize = '14px';
+        div.style.textAlign = 'center';
+        context.marker.setOffset(new AMap.Pixel(-size / 2, -size / 2));
+        context.marker.setContent(div)
+    };
+    var _renderMarker = function(context) {
+        var content = '<div style="background-color: hsla(180, 100%, 50%, 0.3); height: 18px; width: 18px; border: 1px solid hsl(180, 100%, 40%); border-radius: 12px; box-shadow: hsl(180, 100%, 50%) 0px 0px 3px;"></div>';
+        var offset = new AMap.Pixel(-9, -9);
+        context.marker.setContent(content)
+        context.marker.setOffset(offset)
+    }
+
+    if (cluster) {
+            cluster.setMap(null);
+        }
+    var cluster = new AMap.MarkerCluster(map, points, {
+                gridSize: gridSize, // 设置网格像素大小
+                renderClusterMarker: _renderClusterMarker, // 自定义聚合点样式
+                renderMarker: _renderMarker, // 自定义非聚合点样式
+            });
+
+
+
+
 
     var center = map.getCenter();
 

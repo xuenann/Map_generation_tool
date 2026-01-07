@@ -1,5 +1,272 @@
-+
-        '<div class="custom-content-marker">' +
-        '   <img src="https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png">' +
-        '   <div class="close-btn" onclick="clearMarker()"></div>' +
-        '</div>'
+&&plugin=AMap.Scale,AMap.HawkEye,AMap.ToolBar,AMap.ControlBar,AMap.MouseTool"></script>
+<script type="text/javascript" src="https://a.amap.com/jsapi_demos/static/demo-center/js/jquery-1.11.1.min.js" ></script>
+<script type="text/javascript" src="https://a.amap.com/jsapi_demos/static/demo-center/js/underscore-min.js" ></script>
+<script type="text/javascript" src="https://a.amap.com/jsapi_demos/static/demo-center/js/backbone-min.js" ></script>
+<script type="text/javascript" src='https://a.amap.com/jsapi_demos/static/demo-center/js/prety-json.js'></script>
+<script src="https://a.amap.com/jsapi_demos/static/demo-center/js/demoutils.js"></script>
+<script src="https://cache.amap.com/lbs/static/es5.min.js"></script>
+<script type="text/javascript">
+    // 地图控件
+    var lnglat = new AMap.LngLat(116.397428, 39.90923);
+
+    var scale = new AMap.Scale(),
+    controlBar = new AMap.ControlBar({
+        position: {
+            top: '10px',
+            left: '10px',
+        }
+    }),
+    // 初始化地图
+    map = new AMap.Map('container', {
+        resizeEnable: true,     //是否监控地图容器尺寸变化
+        center: [116.397428, 39.90923],
+        zoom: 13,
+        viewMode: '3D',
+        pitch: 0,
+        features: ['bg', 'road', 'point', 'building'],
+    });
+    map.addControl(scale);
+    map.addControl(controlBar);
+    
+
+    // 获取地图中心点/级别：显示地图层级与中心点信息
+    function logMapinfo_zoom(){
+      var zoom = map.getZoom(); //获取当前地图级别
+      var center = map.getCenter(); //获取当前地图中心位置
+      document.querySelector("#map-zoom").innerText = zoom;
+      document.querySelector("#map-center").innerText = center.toString();
+    };
+    // 监听地图层级和中心变化事件
+    map.on('zoommend', logMapinfo_zoom);
+    map.on('moveend', logMapinfo_zoom);
+
+
+    //获取鼠标点击经纬度：为地图注册click事件获取鼠标点击出的经纬度坐标
+    map.on('click', function(e) {
+        document.getElementById("lnglat").innerText = e.lnglat.getLng() + ',' + e.lnglat.getLat()
+    });
+
+
+    //获取当前行政区：获取并展示当前城市信息
+    function logMapinfo_city(){
+      map.getCity(function(info){
+        // var node = new PrettyJSON.view.Node({
+        //     el: document.querySelector("#map-city"),
+        //     data: info
+        // });
+        var cityInfo = `当前所在省市区：${info.province || ''}-${info.city || ''}-${info.district || ''}`;
+        document.querySelector("#map-city").innerHTML = cityInfo;
+      });
+    }
+    // 绑定地图移动事件
+    logMapinfo_city();
+    map.on('moveend', logMapinfo_city);
+
+
+    //设置地图当前行政区：根据cityname、adcode、citycode设置地图位置
+    function gotoCity() {
+      var val = document.querySelector('#city-name').value; //可以是cityname、adcode、citycode
+      if (!val) {
+        val = "北京市";
+      }
+      map.setCity(val);
+      log.info(`已跳转至${val}`);
+    }
+    //绑定查询点击、回车事件
+    document.querySelector('#query').onclick = gotoCity;
+    document.querySelector('#city-name').onkeydown = function(e) {
+      if (e.keyCode === 13) {
+        gotoCity();
+        return false;
+      }
+      return true;
+    };
+    
+    
+    // 图层的添加与移除：构造官方卫星、路网图层
+    var satelliteLayer = new AMap.TileLayer.Satellite();
+    var roadNetLayer =  new AMap.TileLayer.RoadNet();
+    //批量添加图层
+    //map.add([satelliteLayer, roadNetLayer]);
+    // 获取建筑物选项的复选框
+    var buildingCheckbox = document.querySelector("#map-features input[value='building']");
+    //事件绑定
+    document.querySelector("#add-satellite-layer").onclick = function() {
+      map.add(satelliteLayer);
+      // 添加卫星图层时，取消选中建筑物选项
+      if (buildingCheckbox.checked) {
+        buildingCheckbox.checked = false;
+        setMapFeatures();
+      }
+    }
+    document.querySelector("#remove-satellite-layer").onclick = function() {
+      map.remove(satelliteLayer);
+      // 删除卫星图层时，选中建筑物选项
+      if (!buildingCheckbox.checked) {
+        buildingCheckbox.checked = true;
+        setMapFeatures();
+      }
+    }
+    document.querySelector("#add-roadnet-layer").onclick = function() {
+      map.add(roadNetLayer);
+    }
+    document.querySelector("#remove-roadnet-layer").onclick = function() {
+      map.remove(roadNetLayer);
+    }
+
+
+    // 地图控件:添加比例尺、工具条方向盘
+    function toggleScale(checkbox) {
+        if (checkbox.checked) {
+            scale.show();
+        } else {
+            scale.hide();
+        }
+    }
+    function toggleControlBar(checkbox) {
+        if (checkbox.checked) {
+            controlBar.show()
+        } else {
+            controlBar.hide()
+        }
+    }
+
+
+    // 地图显示要素：设置地图显示要素
+    function setMapFeatures() {
+      var features = [];
+      var inputs = document.querySelectorAll("#map-features input");
+      inputs.forEach(function(input) {
+        if (input.checked) {
+          features.push(input.value);
+        }
+      });
+      map.setFeatures(features);
+    }
+    //绑定checkbox点击事件
+    var inputs = document.querySelectorAll("#map-features input");
+    inputs.forEach(function(checkbox) {
+      checkbox.onclick = setMapFeatures;
+    });
+
+
+    // 地图透明度：
+    var opacity = 1;
+    // var satellite = new AMap.TileLayer.Satellite({
+    //     map: map,
+    //     opacity: opacity
+    // });
+    updateOpa(opacity);
+    function updateOpa(v) {
+        document.getElementById('opa-val').innerText = v;
+    }
+    function setOpacity(e) {
+      	var val = e.target.value
+        updateOpa(val);
+        satelliteLayer.setOpacity(val);
+    }
+  	document.getElementById('opacity').addEventListener('input', setOpacity);
+
+
+    //自定义菜单类
+    // 标记当前是否正在绘制
+    var isDrawing = false;
+    // 存储所有点标记的数组
+    var allMarkers = [];
+    // 存储当前要删除的点标记
+    var currentMarker = null;
+    function ContextMenu(map) {
+        var me = this;
+        //地图中添加鼠标工具MouseTool插件
+        this.mouseTool = new AMap.MouseTool(map);
+        this.contextMenuPositon = null;
+        
+        var content = [];
+        content.push("<div class='info context_menu'>");
+        content.push("  <p class='split_line' onclick='menu.distanceMeasureMenu()'>距离量测</p>");
+        content.push("  <p onclick='menu.addMarkerMenu()'>添加标记</p>");
+        content.push("</div>");
+
+        //通过content自定义右键菜单内容
+        this.contextMenu = new AMap.ContextMenu({isCustom: true, content: content.join('')});
+
+        //地图绑定鼠标右击事件——弹出右键菜单
+        map.on('rightclick', function (e) {
+            if (isDrawing) {
+                me.contextMenu.close();
+                // 结束当前绘制但不关闭工具，允许继续绘制新线
+                me.mouseTool.rule();
+            } else {
+                me.contextMenu.open(map, e.lnglat);
+                me.contextMenuPositon = e.lnglat; //右键菜单位置
+            }
+        });
+    }
+
+    ContextMenu.prototype.distanceMeasureMenu = function () {  //右键菜单距离量测
+        if (isDrawing) {
+            // 如果正在绘制，先关闭当前绘制
+            this.mouseTool.close();
+        }
+        // 开始新的绘制
+        this.mouseTool.rule();
+        this.contextMenu.close();
+        // 标记当前正在绘制距离量测
+        isDrawing = true;
+    };
+
+    // 监听键盘ESC键，退出绘制功能
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' || e.keyCode === 27) {
+            // 按下ESC键，停止所有绘制
+            menu.mouseTool.close();
+            // 重置绘制状态
+            isDrawing = false;
+        }
+    });
+
+
+    //创建点标记右键菜单
+    var markerContextMenu = new AMap.ContextMenu();
+    markerContextMenu.addItem("删除点标记", function () {
+        if (currentMarker) {
+            // 从地图上移除点标记
+            map.remove(currentMarker);
+            // 从数组中移除点标记
+            var index = allMarkers.indexOf(currentMarker);
+            if (index > -1) {
+                allMarkers.splice(index, 1);
+            }
+            // 清空当前标记引用
+            currentMarker = null;
+            // 关闭右键菜单
+            markerContextMenu.close();
+        }
+    }, 0);
+    ContextMenu.prototype.addMarkerMenu = function () {  //右键菜单添加Marker标记
+        this.mouseTool.close();
+        var marker = new AMap.Marker({
+            map: map,
+            position: this.contextMenuPositon || map.getCenter(), //基点位置
+            icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-red.png',
+            offset: new AMap.Pixel(-9, -23) // 设置偏移，使标记中心点与点击位置对齐
+        });
+        // 将新创建的点标记添加到数组中
+        allMarkers.push(marker);
+        this.contextMenu.close();
+        //绑定鼠标右击事件——弹出右键菜单
+        marker.on('rightclick', function (e) {
+            markerContextMenu.open(map, e.lnglat);
+            // 将当前点标记存储到全局变量中，以便删除时使用
+            currentMarker = this;
+        });
+    };
+    //创建右键菜单
+    var menu = new ContextMenu(map);
+    menu.contextMenu.open(map, lnglat);
+
+
+    //map.clearMap();  // 清除地图覆盖物
+
+
+    var markers = [

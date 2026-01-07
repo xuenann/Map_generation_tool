@@ -1,0 +1,70 @@
+        ]
+
+        var icon = {
+            type: 'image',
+            image: 'https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png',
+            size: [6, 9],
+            anchor: 'bottom-center',
+        };
+
+        for (var i = 0; i < positions.length; i++) {
+            var curPosition = positions[i];
+            var curData = {
+                position: curPosition,
+                icon
+            };
+
+            var labelMarker = new AMap.LabelMarker(curData);
+
+            markers.push(labelMarker);
+
+            // 给marker绑定事件
+            labelMarker.on('mouseover', function(e){
+                var position = e.data.data && e.data.data.position;
+
+                if(position){
+                    normalMarker.setContent(
+                        '<div class="amap-info-window">'
+                            + position +
+                            '<div class="amap-info-sharp"></div>' +
+                        '</div>');
+                    normalMarker.setPosition(position);
+                    map.add(normalMarker);
+                }
+            });
+
+            labelMarker.on('mouseout', function(){
+                map.remove(normalMarker);
+            });
+        }
+        // 一次性将海量点添加到图层
+        layer.add(markers);
+        // 普通点
+        var normalMarker = new AMap.Marker({
+            anchor: 'bottom-center',
+            offset: [0, -15],
+        });
+    });
+
+    map.setFitView()
+
+    var center = map.getCenter();
+
+    // var centerText = '当前中心点坐标：' + center.getLng() + ',' + center.getLat();
+    // document.getElementById('centerCoord').innerHTML = centerText;
+    // document.getElementById('tips').innerHTML = '成功添加三个点标记，其中有两个在当前地图视野外！';
+
+    var setFitViewBtn = document.getElementById('setFitView');
+    // 添加事件监听, 使地图自适应显示到合适的范围
+    setFitViewBtn.onclick = function() {
+        // 第一个参数为空，表明用图上所有覆盖物 setFitview
+        // 第二个参数为false, 非立即执行
+        // 第三个参数设置上左下右的空白
+        map.setFitView(null, false, [150, 60, 100, 60]);
+        var newCenter = map.getCenter();
+        // document.getElementById('centerCoord').innerHTML = '当前中心点坐标：' + newCenter.toString();
+        // document.getElementById('tips').innerHTML = '通过setFitView，地图自适应显示到合适的范围内,点标记已全部显示在视野中！';
+    };
+</script>
+</body>
+</html>

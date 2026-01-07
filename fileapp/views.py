@@ -8,6 +8,16 @@ from . import tomap
 import shutil
 
 
+map_type_en_cn = {
+    "gaode_marker": "高德点标记",
+    "baidu_marker": "百度点标记",
+    "gaode_line": "高德线图",
+    "gaode_marker_agg": "高德点聚合",
+    "gaode_big_marker": "高德海量点标记",
+}
+
+
+
 @csrf_exempt
 def index(request):
     return render(request, 'index.html')
@@ -209,7 +219,7 @@ def generate_map(request):
 
                     if ret is False:
                         return JsonResponse({
-                            'message': f'地图生成失败！错误信息: {e}',
+                            'message': f'{map_type_en_cn.get(map_type, map_type)}   地图生成失败！\n错误信息: {e}',
                             'generated_files': generated_files
                         })
                     
@@ -220,13 +230,13 @@ def generate_map(request):
                     # })
                     
                     return JsonResponse({
-                        'message': f'地图生成成功！文件已生成: {os.path.basename(new_file_path)}',
+                        'message': f'{map_type_en_cn.get(map_type, map_type)}   地图生成成功！\n文件已生成: \n{os.path.basename(new_file_path)}',
                         'new_file_path': new_file_path,
                         'generated_files': generated_files
                     })
                 else:
                     return JsonResponse({
-                        'message': f'地图生成成功！但原始文件不存在: {original_file_path}',
+                        'message': f'{map_type_en_cn.get(map_type, map_type)}   地图生成失败！\n原始文件不存在: \n{original_file_path}',
                         'generated_files': generated_files
                     })
             
@@ -258,7 +268,7 @@ def generate_map(request):
 
                     
                     return JsonResponse({
-                        'message': f'地图生成成功！{e}',
+                        'message': f'{map_type_en_cn.get(map_type, map_type)}   地图生成完成！\n{e}',
                         'new_folder_path': new_folder_path,
                         'modified_files': data['folder_path'],
                         'total_modified': len(data['folder_path']),
@@ -266,13 +276,13 @@ def generate_map(request):
                     })
                 else:
                     return JsonResponse({
-                        'message': '地图生成成功！但没有找到上传的文件夹',
+                        'message': f'{map_type_en_cn.get(map_type, map_type)}   地图生成失败！\n没有找到上传的文件夹',
                         'generated_files': generated_files
                     })
             
             else:
                 return JsonResponse({
-                    'message': '地图生成成功！但没有上传文件或文件夹',
+                    'message': f'{map_type_en_cn.get(map_type, map_type)}   地图生成失败！\n没有上传文件或文件夹',
                     'generated_files': generated_files
                 })
                 

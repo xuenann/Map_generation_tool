@@ -1,64 +1,103 @@
 <!doctype html>
 <html>
-
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
-    <title>细线 ThinLine</title>
+    <title>高德线图样例</title>
     <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"/>
     <style>
-        body,
-        html,
-        #container {
-            margin: 0;
+        html, body, #container {
+            height: 100%;
             width: 100%;
-            height: 100%
         }
+        .amap-icon img{
+            width: 20px;
+            height: 29px;
+        }
+        .custom-content-marker {
+            font-size: 14px;
+            font-weight: bold;
+        }
+        #map-features .input-item {
+            height: 2rem;
+        }
+        
+        .context_menu{
+            position: relative;
+            min-width: 12rem;
+            padding: 0;
+        }
+        .context_menu p{
+            cursor: pointer;
+            padding: 0.25rem 1.25rem;
+        }
+        .context_menu p:hover{
+            background: #ccc;
+        }
+        
     </style>
 </head>
-
-
-
 <body>
+<div id="container"></div>
 
-    <div id="container"></div>
+<div class="input-card" style="width:24rem;">
+    <h4>地图自适应</h4>
+    <input id="setFitView" type="button" class="btn" value="地图自适应显示" />
 
-    <div class="input-card">
-        <input id="setFitView" type="button" class="btn" value="地图自适应显示" />
+    <h4>设置地图当前行政区</h4>
+    <div class="input-item">
+      <input id='city-name' placeholder="北京市" type="text" style="margin-right:1rem;"><button class="btn" id="query">去指定城市</button>
     </div>
-    <div class="info">
-        <div id="centerCoord"></div>
-        <div id="tips"></div>
+
+    <div class="input-item">
+      <label>卫星图层：</label>
+      <button class="btn" id="add-satellite-layer" style="margin-right:1rem;">添加卫星图层</button>
+      <button class="btn" id="remove-satellite-layer">删除卫星图层</button>
+    </div>
+    <div class="input-item">
+      <label>红色标记：</label>
+      <button class="btn" id="add-roadnet-layer" style="margin-right:1rem;">添加路网图层</button>
+      <button class="btn" id="remove-roadnet-layer">删除路网图层</button>
     </div>
 
+    <div class="input-item">
+        <input type="checkbox" checked onclick="toggleScale(this)"/>比例尺
+        <input type="checkbox" style="margin-left:2rem;" checked id="controlBar" onclick="toggleControlBar(this)"/>工具条方向盘
+    </div>
 
+    <h4>设置地图显示要素（Features）</h4>
+    <div id="map-features">
+      <div class="input-item">
+        <input type='checkbox' name='mapStyle' value='bg' checked>区域面（bg）
+        <input type='checkbox' name='mapStyle' value='road' checked>道路（road）
+      </div>
+      <div class="input-item">
+        <input type='checkbox' name='mapStyle' value='point' checked>标注（point）
+        <input type='checkbox' name='mapStyle' value='building' checked>建筑物（building）
+      </div>
+    </div>
 
-    <script
-        src="https://webapi.amap.com/maps?v=1.4.15&key=309f07ac6bc48160e80b480ae511e1e9&plugin=Map3D,AMap.DistrictSearch"></script>
+    <div>
+        <label>图层透明度：</label><span id="opa-val"></span>
+        <br>
+        <input id="opacity" type="range" value="1" min="0" max="1" step="0.01">
+    </div>
+    
+</div>
 
-    <script>
-        var satellite = new AMap.TileLayer.Satellite();
-        var roadNet = new AMap.TileLayer.RoadNet();
-        var map = new AMap.Map('container', {
-            resizeEnable: true,
-            center: [116.397428, 39.90923],
-            zoom: 13,
-            layers:[
-                    satellite,
-                    roadNet
-            ]
-        });
+<div class="info">
+    <!-- <h4>获取地图级别与中心点坐标</h4> -->
+    <p style="font-size: 1.2rem;">当前地图级别：<span id="map-zoom">13</span></p>
+    <p style="font-size: 1.2rem;">当前地图中心点坐标：<span id="map-center">116.397428, 39.90923</span></p>
 
+    <p style="font-size: 1.2rem;">左击获取经纬度：<span id="lnglat">116.397428, 39.90923</span></p>
 
+    <!-- <h4>当前所在行政区信息</h4> -->
+    <p style="font-size: 1.2rem;"><span id="map-city"></span></p>
 
-        AMap.event.addDomListener(document.getElementById('setFitView'), 'click', function() {
-        var newCenter = map.setFitView();
-   
-        
-        });
-
-
-new AMap.Polyline({
-map,
-path: [
+    <!-- <div id="centerCoord"></div>
+    <div id="tips"></div> -->
+</div>
+<script type="text/javascript"
+        src="https://webapi.amap.com/maps?v=2.0&key=

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
-    <title>自适应显示多个点标记</title>
+    <title>高德海量点标记样例</title>
     <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"/>
     <style>
         html, body, #container {
@@ -34,6 +34,25 @@
         }
         .context_menu p:hover{
             background: #ccc;
+        }
+
+        .amap-info-window{
+            width: 150px;
+            background: #fff;
+            border-radius: 3px;
+            padding: 3px 7px;
+            box-shadow: 0 2px 6px 0 rgba(114, 124, 245, .5);
+            position: relative;
+        }
+        .amap-info-sharp{
+            position: absolute;
+            top: 21px;
+            bottom: 0;
+            left: 50%;
+            margin-left: -8px;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 8px solid #fff;
         }
         
     </style>

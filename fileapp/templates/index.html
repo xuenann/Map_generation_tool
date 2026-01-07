@@ -145,7 +145,9 @@
         <label>请选择地图类型：</label>
         <select id="map_type" onchange="showSubModule()">
             <option value="gaode_marker">高德点标记</option>
+            <option value="gaode_big_marker">高德海量点标记</option>
             <option value="gaode_line">高德线图</option>
+            <option value="gaode_marker_agg">高德点聚合</option>
             <option value="baidu_marker">百度点标记</option>
         </select>
     </div>
@@ -157,7 +159,7 @@
             <h3>高德点标记设置</h3>
             <div style="margin-bottom: 15px;">
                 <label>样例查看：</label>
-                <a href="/templates/gaode_marker/高德点标记.html" target="_blank">查看高德点标记样例</a>
+                <a href="/templates/gaode_marker/高德点标记样例.html" target="_blank">高德点标记样例</a>
             </div>
             <div style="margin-bottom: 10px;">
                 <label for="longitude_column">输入经度列：</label>
@@ -167,6 +169,27 @@
                 <label for="latitude_column">输入纬度列：</label>
                 <input type="text" id="latitude_column" placeholder="如：2（从0开始数）" style="width: 200px;">
             </div>
+            <div style="margin-bottom: 10px;">
+                <label for="gaode_marker_column">输入标记列：</label>
+                <input type="text" id="gaode_marker_column" placeholder="点标记想要展示内容的列（可空）" style="width: 200px;">
+            </div>
+        </div>
+
+        <!-- 高德海量点标记子模块 -->
+        <div id="gaode_big_marker_module" style="display: none;">
+            <h3>高德海量点标记设置</h3>
+            <div style="margin-bottom: 15px;">
+                <label>样例查看：</label>
+                <a href="/templates/gaode_big_marker/高德海量点标记样例.html" target="_blank">高德海量点标记样例</a>
+            </div>
+            <div style="margin-bottom: 10px;">
+                <label for="gaode_big_marker_longitude_column">输入经度列：</label>
+                <input type="text" id="gaode_big_marker_longitude_column" placeholder="如：1（从0开始数）" style="width: 200px;">
+            </div>
+            <div>
+                <label for="gaode_big_marker_latitude_column">输入纬度列：</label>
+                <input type="text" id="gaode_big_marker_latitude_column" placeholder="如：2（从0开始数）" style="width: 200px;">
+            </div>
         </div>
         
         <!-- 高德线图子模块 -->
@@ -174,7 +197,7 @@
             <h3>高德线图设置</h3>
             <div style="margin-bottom: 10px;">
                 <label>样例查看：</label>
-                <a href="/templates/gaode_line/高德线图.html" target="_blank">查看高德线图样例</a>
+                <a href="/templates/gaode_line/高德线图样例.html" target="_blank">高德线图样例</a>
             </div>
             <div style="margin-bottom: 10px;">
                 <label for="gaode_line_longitude_column">输入经度列：</label>
@@ -189,13 +212,34 @@
                 <input type="text" id="gaode_line_sort_column" placeholder="需要以哪列排序，通常为时间列（可空）" style="width: 200px;">
             </div>
         </div>
+
+        <!-- 高德点聚合子模块 -->
+        <div id="gaode_marker_agg_module" style="display: none;">
+            <h3>高德点聚合设置</h3>
+            <div style="margin-bottom: 10px;">
+                <label>样例查看：</label>
+                <a href="/templates/gaode_marker_agg/高德点聚合样例.html" target="_blank">高德点聚合样例</a>
+            </div>
+            <div style="margin-bottom: 10px;">
+                <label for="gaode_marker_agg_longitude_column">输入经度列：</label>
+                <input type="text" id="gaode_marker_agg_longitude_column" placeholder="如：1（从0开始数）" style="width: 200px;">
+            </div>
+            <div style="margin-bottom: 10px;">
+                <label for="gaode_marker_agg_latitude_column">输入纬度列：</label>
+                <input type="text" id="gaode_marker_agg_latitude_column" placeholder="如：2（从0开始数）" style="width: 200px;">
+            </div>
+            <div style="margin-bottom: 10px;">
+                <label for="gaode_marker_agg_weight_column">输入权重列：</label>
+                <input type="text" id="gaode_marker_agg_weight_column" placeholder="需要以哪列作为权重，以权重高的点为中心进行聚合（可空）" style="width: 200px;">
+            </div>
+        </div>
         
         <!-- 百度点图子模块 -->
         <div id="baidu_marker_module" style="display: none;">
             <h3>百度点标记设置</h3>
             <div style="margin-bottom: 10px;">
                 <label>样例查看：</label>
-                <a href="/templates/baidu_marker/百度点标记.html" target="_blank">查看百度点标记样例</a>
+                <a href="/templates/baidu_marker/百度点标记.html" target="_blank">百度点标记样例</a>
             </div>
             <div style="margin-bottom: 10px;">
                 <label for="baidu_longitude_column">输入经度列：</label>
@@ -213,9 +257,16 @@
     </div>
 
     <!-- 生成地图 -->
-    <div>
-        <button onclick="generateMap()">生成地图</button>
-        <input type="text" id="map_result" readonly />
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <button onclick="generateMap()" style="margin: 0;padding: 8px 16px;font-size: 14px;">
+            生成地图
+        </button>
+        <textarea 
+            id="map_result" 
+            readonly 
+            rows="4" 
+            style="flex: 1; min-width: 300px; padding: 8px; font-size: 14px; resize: vertical;"
+        ></textarea>
     </div>
 
     <!-- 生成的HTML文件列表 -->
@@ -275,7 +326,9 @@
             
             // 隐藏所有子模块
             document.getElementById("gaode_marker_module").style.display = "none";
+            document.getElementById("gaode_big_marker_module").style.display = "none";
             document.getElementById("gaode_line_module").style.display = "none";
+            document.getElementById("gaode_marker_agg_module").style.display = "none";
             document.getElementById("baidu_marker_module").style.display = "none";
             
             // 显示选中的子模块
@@ -306,8 +359,10 @@
                 // 获取高德点标记的经纬度列信息
                 const longitudeColumn = document.getElementById("longitude_column").value;
                 const latitudeColumn = document.getElementById("latitude_column").value;
+                const gaodeMarkerColumn = document.getElementById("gaode_marker_column").value;
                 data.longitude_column = longitudeColumn;
                 data.latitude_column = latitudeColumn;
+                data.marker_column = gaodeMarkerColumn;
             } else if (mapType === "baidu_marker") {
                 // 获取百度点图的经纬度列和标记列信息
                 const baiduLongitudeColumn = document.getElementById("baidu_longitude_column").value;
@@ -324,6 +379,20 @@
                 data.longitude_column = gaodeLineLongitudeColumn;
                 data.latitude_column = gaodeLineLatitudeColumn;
                 data.sort_column = gaodeLineSortColumn;
+            } else if (mapType === "gaode_big_marker") {
+                // 获取高德海量点标记的经纬度列信息
+                const gaodeBigMarkerLongitudeColumn = document.getElementById("gaode_big_marker_longitude_column").value;
+                const gaodeBigMarkerLatitudeColumn = document.getElementById("gaode_big_marker_latitude_column").value;
+                data.longitude_column = gaodeBigMarkerLongitudeColumn;
+                data.latitude_column = gaodeBigMarkerLatitudeColumn;
+            } else if (mapType === "gaode_marker_agg") {
+                // 获取高德点聚合的经纬度列和权重列信息
+                const gaodeMarkerAggLongitudeColumn = document.getElementById("gaode_marker_agg_longitude_column").value;
+                const gaodeMarkerAggLatitudeColumn = document.getElementById("gaode_marker_agg_latitude_column").value;
+                const gaodeMarkerAggWeightColumn = document.getElementById("gaode_marker_agg_weight_column").value;
+                data.longitude_column = gaodeMarkerAggLongitudeColumn;
+                data.latitude_column = gaodeMarkerAggLatitudeColumn;
+                data.weight_column = gaodeMarkerAggWeightColumn;
             }
             
             // 发送请求到后端

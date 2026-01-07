@@ -1,0 +1,65 @@
+    ]
+    var count = points.length;
+
+    var _renderClusterMarker = function (context) {
+        var factor = Math.pow(context.count / count, 1 / 18);
+        var div = document.createElement('div');
+        var Hue = 180 - factor * 180;
+        var bgColor = 'hsla(' + Hue + ',100%,40%,0.7)';
+        var fontColor = 'hsla(' + Hue + ',100%,90%,1)';
+        var borderColor = 'hsla(' + Hue + ',100%,40%,1)';
+        var shadowColor = 'hsla(' + Hue + ',100%,90%,1)';
+        div.style.backgroundColor = bgColor;
+        var size = Math.round(30 + Math.pow(context.count / count, 1 / 5) * 20);
+        div.style.width = div.style.height = size + 'px';
+        div.style.border = 'solid 1px ' + borderColor;
+        div.style.borderRadius = size / 2 + 'px';
+        div.style.boxShadow = '0 0 5px ' + shadowColor;
+        div.innerHTML = context.count;
+        div.style.lineHeight = size + 'px';
+        div.style.color = fontColor;
+        div.style.fontSize = '14px';
+        div.style.textAlign = 'center';
+        context.marker.setOffset(new AMap.Pixel(-size / 2, -size / 2));
+        context.marker.setContent(div)
+    };
+    var _renderMarker = function(context) {
+        var content = '<div style="background-color: hsla(180, 100%, 50%, 0.3); height: 18px; width: 18px; border: 1px solid hsl(180, 100%, 40%); border-radius: 12px; box-shadow: hsl(180, 100%, 50%) 0px 0px 3px;"></div>';
+        var offset = new AMap.Pixel(-9, -9);
+        context.marker.setContent(content)
+        context.marker.setOffset(offset)
+    }
+
+    if (cluster) {
+            cluster.setMap(null);
+        }
+    var cluster = new AMap.MarkerCluster(map, points, {
+                gridSize: gridSize, // 设置网格像素大小
+                renderClusterMarker: _renderClusterMarker, // 自定义聚合点样式
+                renderMarker: _renderMarker, // 自定义非聚合点样式
+            });
+
+
+
+
+
+    var center = map.getCenter();
+
+    // var centerText = '当前中心点坐标：' + center.getLng() + ',' + center.getLat();
+    // document.getElementById('centerCoord').innerHTML = centerText;
+    // document.getElementById('tips').innerHTML = '成功添加三个点标记，其中有两个在当前地图视野外！';
+
+    var setFitViewBtn = document.getElementById('setFitView');
+    // 添加事件监听, 使地图自适应显示到合适的范围
+    setFitViewBtn.onclick = function() {
+        // 第一个参数为空，表明用图上所有覆盖物 setFitview
+        // 第二个参数为false, 非立即执行
+        // 第三个参数设置上左下右的空白
+        map.setFitView(null, false, [150, 60, 100, 60]);
+        var newCenter = map.getCenter();
+        // document.getElementById('centerCoord').innerHTML = '当前中心点坐标：' + newCenter.toString();
+        // document.getElementById('tips').innerHTML = '通过setFitView，地图自适应显示到合适的范围内,点标记已全部显示在视野中！';
+    };
+</script>
+</body>
+</html>
