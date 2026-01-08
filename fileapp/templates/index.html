@@ -269,7 +269,7 @@
             <h3>百度点标记设置</h3>
             <div style="margin-bottom: 10px;">
                 <label>样例查看：</label>
-                <a href="/templates/baidu_marker/百度点标记.html" target="_blank">百度点标记样例</a>
+                <a href="/templates/baidu_marker/百度点标记样例.html" target="_blank">百度点标记样例</a>
             </div>
             <div style="margin-bottom: 10px;">
                 <label for="baidu_longitude_column">输入经度列：</label>
@@ -449,31 +449,90 @@
                 document.getElementById("map_result").value = data.message;
                 
                 // 显示生成的文件列表
+                const generatedFilesDiv = document.getElementById("generated_files");
                 const filesList = document.getElementById("files_list");
                 filesList.innerHTML = "";
                 
                 if (data.generated_files && Array.isArray(data.generated_files)) {
                     if (data.generated_files.length > 0) {
+                        // 添加一键下载所有文件按钮
+                        const downloadAllBtn = document.createElement("button");
+                        downloadAllBtn.textContent = "一键下载所有文件";
+                        downloadAllBtn.onclick = () => {
+                            // 创建一个临时的a标签用于下载
+                            const tempLink = document.createElement("a");
+                            tempLink.href = "/uploads/127.0.0.1/map.zip";
+                            tempLink.download = "map.zip"; // 指定下载的文件名
+                            tempLink.style.display = "none";
+                            document.body.appendChild(tempLink);
+                            tempLink.click();
+                            document.body.removeChild(tempLink);
+                        };
+                        downloadAllBtn.style.marginBottom = "10px";
+                        
+                        // 检查是否已经存在一键下载按钮，如果存在则移除
+                        const existingDownloadAllBtn = generatedFilesDiv.querySelector("button[onclick*='map.zip']");
+                        if (existingDownloadAllBtn) {
+                            existingDownloadAllBtn.remove();
+                        }
+                        
+                        // 在h3标签后插入一键下载按钮
+                        const h3 = generatedFilesDiv.querySelector("h3");
+                        h3.insertAdjacentElement("afterend", downloadAllBtn);
+                        
                         data.generated_files.forEach(file => {
                             const li = document.createElement("li");
+                            li.style.marginBottom = "5px";
+                            
                             const a = document.createElement("a");
                             a.href = file.url;
                             a.target = "_blank";
                             a.textContent = file.name;
+                            a.style.marginRight = "10px";
                             li.appendChild(a);
+                            
+                            // 添加下载按钮
+                            const downloadBtn = document.createElement("button");
+                            downloadBtn.textContent = "下载";
+                            downloadBtn.onclick = () => {
+                                // 创建一个临时的a标签用于下载
+                                const tempLink = document.createElement("a");
+                                tempLink.href = file.url;
+                                tempLink.download = file.name; // 指定下载的文件名
+                                tempLink.style.display = "none";
+                                document.body.appendChild(tempLink);
+                                tempLink.click();
+                                document.body.removeChild(tempLink);
+                            };
+                            downloadBtn.style.padding = "4px 8px";
+                            downloadBtn.style.fontSize = "12px";
+                            li.appendChild(downloadBtn);
+                            
                             filesList.appendChild(li);
                         });
                     } else {
                         const li = document.createElement("li");
                         li.textContent = "没有生成任何文件";
                         filesList.appendChild(li);
+                        
+                        // 移除一键下载按钮（如果存在）
+                        const downloadAllBtn = generatedFilesDiv.querySelector("button[onclick*='map.zip']");
+                        if (downloadAllBtn) {
+                            downloadAllBtn.remove();
+                        }
                     }
                     
                     // 显示文件列表区域
-                    document.getElementById("generated_files").style.display = "block";
+                    generatedFilesDiv.style.display = "block";
                 } else {
                     console.log("没有收到生成的文件列表数据");
-                    document.getElementById("generated_files").style.display = "none";
+                    generatedFilesDiv.style.display = "none";
+                    
+                    // 移除一键下载按钮（如果存在）
+                    const downloadAllBtn = generatedFilesDiv.querySelector("button[onclick*='map.zip']");
+                    if (downloadAllBtn) {
+                        downloadAllBtn.remove();
+                    }
                 }
             })
             .catch(error => {

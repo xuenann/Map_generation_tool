@@ -1,6 +1,7 @@
 import csv
 from . import coordinate_transform
 import os
+import zipfile
 from .map_function import gaode_marker,gaode_line,gaode_big_marker,gaode_marker_agg,gaode_hotmap
 from .map_function import baidu_marker
 
@@ -100,6 +101,13 @@ def generate_map(f_type,file_path,new_file_path,data,user_ip):
                                 'name': new_file_name,
                                 'url': f'/uploads/{user_ip}/{os.path.basename(new_file_path)}/{new_file_name}'
                             })
+        
+        # 生成的地图文件打包成zip文件
+        try:
+            zip_folder(new_file_path,os.path.join(os.path.dirname(new_file_path),'map.zip'))
+        except Exception as e:
+            print(e)
+            
 
         return ret,f'共处理{len(os.listdir(file_path))}个文件，成功{len(generated_files)}个，失败{len(err_msg)}个\n'+ \
                             '\n'.join(err_msg),generated_files
@@ -143,3 +151,15 @@ def deal_data(file_path,data):
         return (False,e)
                 
 
+def zip_folder(folder_path, zip_path):
+    """
+    将 folder_path 压缩成 zip_path
+    """
+    with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        for root, dirs, files in os.walk(folder_path):
+            for file in files:
+                file_path = os.path.join(root, file)
+
+                # 关键：保持相对路径
+                arcname = os.path.relpath(file_path, folder_path)
+                zipf.write(file_path, arcname)
