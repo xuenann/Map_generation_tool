@@ -3,7 +3,7 @@ import os
 
 
 
-def read_gaode_big_marker_config():
+def read_gaode_big_marker_config(data):
     '''
     读取高德海量点标记配置文件
 

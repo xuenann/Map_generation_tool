@@ -14,6 +14,7 @@ map_type_en_cn = {
     "gaode_line": "高德线图",
     "gaode_marker_agg": "高德点聚合",
     "gaode_big_marker": "高德海量点标记",
+    "gaode_hotmap": "高德热力图",
 }
 
 

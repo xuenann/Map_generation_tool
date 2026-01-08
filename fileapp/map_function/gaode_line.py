@@ -3,7 +3,7 @@ import os
 
 
 
-def read_gaode_line_config():
+def read_gaode_line_config(data):
     '''
     读取高德地图line配置文件
 

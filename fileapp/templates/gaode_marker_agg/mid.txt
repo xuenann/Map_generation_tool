@@ -7,6 +7,35 @@
 <script src="https://cache.amap.com/lbs/static/es5.min.js"></script>
 <script src="https://a.amap.com/jsapi_demos/static/data/weight.js"></script>
 <script type="text/javascript">
+    // 切换功能
+    function toggleInputCard() {
+        var inputCard = document.querySelector('.input-card');
+        var toggleBtn = inputCard.querySelector('.toggle-btn');
+        var toggleIcon = toggleBtn.querySelector('.toggle-icon');
+        
+        inputCard.classList.toggle('hidden');
+        
+        if (inputCard.classList.contains('hidden')) {
+            toggleBtn.innerHTML = '<span class="toggle-icon">▶</span> 展开工具';
+        } else {
+            toggleBtn.innerHTML = '<span class="toggle-icon">▼</span> 收起工具';
+        }
+    }
+    
+    function toggleInfoCard() {
+        var infoCard = document.querySelector('.info');
+        var toggleBtn = infoCard.querySelector('.toggle-btn');
+        var toggleIcon = toggleBtn.querySelector('.toggle-icon');
+        
+        infoCard.classList.toggle('hidden');
+        
+        if (infoCard.classList.contains('hidden')) {
+            toggleBtn.innerHTML = '<span class="toggle-icon">▶</span> 展开信息';
+        } else {
+            toggleBtn.innerHTML = '<span class="toggle-icon">▼</span> 收起信息';
+        }
+    }
+    
     // 地图控件
     var cluster;
     var lnglat = new AMap.LngLat(116.397428, 39.90923);
@@ -265,7 +294,7 @@
     };
     //创建右键菜单
     var menu = new ContextMenu(map);
-    menu.contextMenu.open(map, lnglat);
+    // menu.contextMenu.open(map, lnglat);
 
 
     //map.clearMap();  // 清除地图覆盖物

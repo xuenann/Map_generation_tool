@@ -35,6 +35,42 @@
         .context_menu p:hover{
             background: #ccc;
         }
+        /* 切换按钮样式 */
+        .toggle-container {
+            text-align: right;
+            margin-bottom: 10px;
+        }
+        
+        .toggle-btn {
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .toggle-btn:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .toggle-icon {
+            font-size: 10px;
+            transition: transform 0.3s ease;
+        }
+        
+        .input-card.hidden {
+            height: 40px;
+            overflow: hidden;
+        }
+        
+        .info.hidden {
+            height: 40px;
+            overflow: hidden;
+        }
         
     </style>
 </head>
@@ -42,6 +78,11 @@
 <div id="container"></div>
 
 <div class="input-card" style="width:24rem;">
+    <div class="toggle-container">
+        <button class="toggle-btn" onclick="toggleInputCard()">
+            <span class="toggle-icon">▼</span> 收起工具
+        </button>
+    </div>
     <h4>地图自适应</h4>
     <input id="setFitView" type="button" class="btn" value="地图自适应显示" />
 
@@ -87,6 +128,11 @@
 </div>
 
 <div class="info">
+    <div class="toggle-container">
+        <button class="toggle-btn" onclick="toggleInfoCard()">
+            <span class="toggle-icon">▼</span> 收起信息
+        </button>
+    </div>
     <!-- <h4>获取地图级别与中心点坐标</h4> -->
     <p style="font-size: 1.2rem;">当前地图级别：<span id="map-zoom">13</span></p>
     <p style="font-size: 1.2rem;">当前地图中心点坐标：<span id="map-center">116.397428, 39.90923</span></p>
@@ -109,6 +155,35 @@
 <script src="https://cache.amap.com/lbs/static/es5.min.js"></script>
 <script src="https://a.amap.com/jsapi_demos/static/data/weight.js"></script>
 <script type="text/javascript">
+// 切换功能
+    function toggleInputCard() {
+        var inputCard = document.querySelector('.input-card');
+        var toggleBtn = inputCard.querySelector('.toggle-btn');
+        var toggleIcon = toggleBtn.querySelector('.toggle-icon');
+        
+        inputCard.classList.toggle('hidden');
+        
+        if (inputCard.classList.contains('hidden')) {
+            toggleBtn.innerHTML = '<span class="toggle-icon">▶</span> 展开工具';
+        } else {
+            toggleBtn.innerHTML = '<span class="toggle-icon">▼</span> 收起工具';
+        }
+    }
+    
+    function toggleInfoCard() {
+        var infoCard = document.querySelector('.info');
+        var toggleBtn = infoCard.querySelector('.toggle-btn');
+        var toggleIcon = toggleBtn.querySelector('.toggle-icon');
+        
+        infoCard.classList.toggle('hidden');
+        
+        if (infoCard.classList.contains('hidden')) {
+            toggleBtn.innerHTML = '<span class="toggle-icon">▶</span> 展开信息';
+        } else {
+            toggleBtn.innerHTML = '<span class="toggle-icon">▼</span> 收起信息';
+        }
+    }
+    
     // 地图控件
     var cluster;
     var lnglat = new AMap.LngLat(116.397428, 39.90923);
@@ -367,7 +442,7 @@
     };
     //创建右键菜单
     var menu = new ContextMenu(map);
-    menu.contextMenu.open(map, lnglat);
+    // menu.contextMenu.open(map, lnglat);
 
 
     //map.clearMap();  // 清除地图覆盖物

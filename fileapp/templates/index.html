@@ -148,6 +148,7 @@
             <option value="gaode_big_marker">高德海量点标记</option>
             <option value="gaode_line">高德线图</option>
             <option value="gaode_marker_agg">高德点聚合</option>
+            <option value="gaode_hotmap">高德热力图</option>
             <option value="baidu_marker">百度点标记</option>
         </select>
     </div>
@@ -230,7 +231,36 @@
             </div>
             <div style="margin-bottom: 10px;">
                 <label for="gaode_marker_agg_weight_column">输入权重列：</label>
-                <input type="text" id="gaode_marker_agg_weight_column" placeholder="需要以哪列作为权重，以权重高的点为中心进行聚合（可空）" style="width: 200px;">
+                <input type="text" id="gaode_marker_agg_weight_column" placeholder="以权重高的点为中心聚合（可空）" style="width: 200px;">
+            </div>
+        </div>
+
+        <!-- 高德热力图模块 -->
+        <div id="gaode_hotmap_module" style="display: none;">
+            <h3>高德热力图设置</h3>
+            <div style="margin-bottom: 10px;">
+                <label>样例查看：</label>
+                <a href="/templates/gaode_hotmap/高德热力图样例.html" target="_blank">高德热力图样例</a>
+                <a>、</a>
+                <a href="/templates/gaode_hotmap/高德3D热力图样例.html" target="_blank">高德3D热力图样例</a>
+            </div>
+            <!-- 选择热力图样式 -->
+            <div>
+                <label>选择热力图样式：</label>
+                <input type="radio" name="hotmap_style" value="2d" checked> 热力图
+                <input type="radio" name="hotmap_style" value="3d"> 3D热力图
+            </div>
+            <div style="margin-bottom: 10px;">
+                <label for="gaode_hotmap_longitude_column">输入经度列：</label>
+                <input type="text" id="gaode_hotmap_longitude_column" placeholder="如：1（从0开始数）" style="width: 200px;">
+            </div>
+            <div style="margin-bottom: 10px;">
+                <label for="gaode_hotmap_latitude_column">输入纬度列：</label>
+                <input type="text" id="gaode_hotmap_latitude_column" placeholder="如：2（从0开始数）" style="width: 200px;">
+            </div>
+            <div style="margin-bottom: 10px;">
+                <label for="gaode_hotmap_weight_column">输入计数列：</label>
+                <input type="text" id="gaode_hotmap_weight_column" placeholder="热力值的列（可空）" style="width: 200px;">
             </div>
         </div>
         
@@ -329,6 +359,7 @@
             document.getElementById("gaode_big_marker_module").style.display = "none";
             document.getElementById("gaode_line_module").style.display = "none";
             document.getElementById("gaode_marker_agg_module").style.display = "none";
+            document.getElementById("gaode_hotmap_module").style.display = "none";
             document.getElementById("baidu_marker_module").style.display = "none";
             
             // 显示选中的子模块
@@ -393,6 +424,16 @@
                 data.longitude_column = gaodeMarkerAggLongitudeColumn;
                 data.latitude_column = gaodeMarkerAggLatitudeColumn;
                 data.weight_column = gaodeMarkerAggWeightColumn;
+            } else if (mapType === "gaode_hotmap") {
+                // 获取高德热力图的经纬度列和计数列信息
+                const gaodeHotmapStyle = document.querySelector("input[name='hotmap_style']:checked").value;
+                const gaodeHotmapLongitudeColumn = document.getElementById("gaode_hotmap_longitude_column").value;
+                const gaodeHotmapLatitudeColumn = document.getElementById("gaode_hotmap_latitude_column").value;
+                const gaodeHotmapWeightColumn = document.getElementById("gaode_hotmap_weight_column").value;
+                data.hotmap_style = gaodeHotmapStyle;
+                data.longitude_column = gaodeHotmapLongitudeColumn;
+                data.latitude_column = gaodeHotmapLatitudeColumn;
+                data.count_column = gaodeHotmapWeightColumn;
             }
             
             // 发送请求到后端

@@ -3,7 +3,7 @@ import os
 
 
 
-def read_gaode_market_config():
+def read_gaode_market_config(data):
     '''
     读取高德地图marker配置文件
 

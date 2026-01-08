@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
-    <title>高德线图样例</title>
+    <title>高德热力图样例</title>
     <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"/>
     <style>
         html, body, #container {
@@ -35,7 +35,7 @@
         .context_menu p:hover{
             background: #ccc;
         }
-            /* 切换按钮样式 */
+        /* 切换按钮样式 */
         .toggle-container {
             text-align: right;
             margin-bottom: 10px;
@@ -71,7 +71,6 @@
             height: 40px;
             overflow: hidden;
         }
-        
     </style>
 </head>
 <body>
@@ -153,6 +152,7 @@
 <script type="text/javascript" src='https://a.amap.com/jsapi_demos/static/demo-center/js/prety-json.js'></script>
 <script src="https://a.amap.com/jsapi_demos/static/demo-center/js/demoutils.js"></script>
 <script src="https://cache.amap.com/lbs/static/es5.min.js"></script>
+<script src="https://a.amap.com/jsapi_demos/static/resource/heatmapData.js"></script>
 <script type="text/javascript">
     // 切换功能
     function toggleInputCard() {
@@ -197,9 +197,9 @@
     map = new AMap.Map('container', {
         resizeEnable: true,     //是否监控地图容器尺寸变化
         center: [116.397428, 39.90923],
-        zoom: 13,
+        zoom: 10,
         viewMode: '3D',
-        pitch: 0,
+        pitch: 30,
         features: ['bg', 'road', 'point', 'building'],
     });
     map.addControl(scale);
@@ -445,21 +445,56 @@
 
     //map.clearMap();  // 清除地图覆盖物
 
-    var path1 = [
-        [75.757904, 41.118117],
-        [97.375719, 27.598057],
-        [117.375719, 41.118117]
-    ];
+    if (!isSupportCanvas()) {
+        alert('热力图仅对支持canvas的浏览器适用,您所使用的浏览器不能使用热力图功能,请换个浏览器试试~')
+    }
 
-    var polyline1 = new AMap.Polyline({
-        path: path1,            // 设置线覆盖物路径
-     	  showDir:true,
-        strokeColor: '#3d93fd',   // 线颜色
-        strokeWeight: 7           // 线宽
+    //详细的参数,可以查看heatmap.js的文档 http://www.patrick-wied.at/static/heatmapjs/docs.html
+    //参数说明如下:
+    /* visible 热力图是否显示,默认为true
+     * opacity 热力图的透明度,分别对应heatmap.js的minOpacity和maxOpacity
+     * radius 势力图的每个点的半径大小
+     * gradient  {JSON} 热力图的渐变区间 . gradient如下所示
+     *	{
+     .2:'rgb(0, 255, 255)',
+     .5:'rgb(0, 110, 255)',
+     .8:'rgb(100, 0, 255)'
+     }
+     其中 key 表示插值的位置, 0-1
+     value 为颜色值
+     */
+    var heatmap;
+    map.plugin(["AMap.HeatMap"], function () {
+        //初始化heatmap对象
+        heatmap = new AMap.HeatMap(map, {
+            radius: 25, //给定半径
+            opacity: [0, 0.8]
+            /*,
+            gradient:{
+                0.5: 'blue',
+                0.65: 'rgb(117,211,248)',
+                0.7: 'rgb(0, 255, 0)',
+                0.9: '#ffea00',
+                1.0: 'red'
+            }
+             */
+        });
+        //设置数据集：该数据为北京部分“公园”数据
+        heatmap.setDataSet({
+            data: heatmapData,
+            max: 100
+        });
     });
 
-    map.add([polyline1])
-    map.setFitView()
+    //判断浏览区是否支持canvas
+    function isSupportCanvas() {
+        var elem = document.createElement('canvas');
+        return !!(elem.getContext && elem.getContext('2d'));
+    }
+    heatmap.show()
+
+
+
 
     var center = map.getCenter();
 
@@ -470,14 +505,27 @@
     var setFitViewBtn = document.getElementById('setFitView');
     // 添加事件监听, 使地图自适应显示到合适的范围
     setFitViewBtn.onclick = function() {
-        // 第一个参数为空，表明用图上所有覆盖物 setFitview
-        // 第二个参数为false, 非立即执行
-        // 第三个参数设置上左下右的空白
-        map.setFitView(null, false, [150, 60, 100, 60]);
-        var newCenter = map.getCenter();
+        if (heatmapData && heatmapData.length > 0) {
+            // 手动计算热力图数据的经纬度范围
+            var tempMarkers = [];
+            heatmapData.forEach(function(item) {
+              var marker = new AMap.Marker({
+                  position: [item.lng, item.lat],
+                  visible: false  // 不显示，只用于计算视野
+              });
+              tempMarkers.push(marker);
+            });
+            // 设置地图视野以适应热力图范围
+            map.setFitView(tempMarkers, false, [60, 60, 60, 60]);
+        } else {
+            // 如果没有热力图数据，使用默认的setFitView
+            map.setFitView(null);
+        }
+        // var newCenter = map.getCenter();
         // document.getElementById('centerCoord').innerHTML = '当前中心点坐标：' + newCenter.toString();
         // document.getElementById('tips').innerHTML = '通过setFitView，地图自适应显示到合适的范围内,点标记已全部显示在视野中！';
     };
+    setFitViewBtn.onclick();
 </script>
 </body>
 </html>

@@ -3,7 +3,7 @@ import os
 
 
 
-def read_baidu_market_config():
+def read_baidu_market_config(data):
     '''
     读取百度地图marker配置文件
 

@@ -1,9 +1,11 @@
 import csv
 from . import coordinate_transform
 import os
-from .map_function import gaode_marker,baidu_marker,gaode_line,gaode_big_marker,gaode_marker_agg
+from .map_function import gaode_marker,gaode_line,gaode_big_marker,gaode_marker_agg,gaode_hotmap
+from .map_function import baidu_marker
 
 
+# 坐标转换函数字典
 coordinate_func_dict={
         'wgs84_gaode':coordinate_transform.wgs84_to_gcj02,
         'bd09_gaode':coordinate_transform.bd09_to_gcj02,
@@ -12,21 +14,23 @@ coordinate_func_dict={
         'gcj02_baidu':coordinate_transform.gcj02_to_bd09,
         'mapbar_baidu':coordinate_transform.mapbar_to_bd09,
     }
-
+# 地图配置函数字典
 config_func_dict={
         'gaode_marker':gaode_marker.read_gaode_market_config,
         'baidu_marker':baidu_marker.read_baidu_market_config,
         'gaode_line':gaode_line.read_gaode_line_config,
         'gaode_big_marker':gaode_big_marker.read_gaode_big_marker_config,
         'gaode_marker_agg':gaode_marker_agg.read_gaode_marker_agg_config,
+        'gaode_hotmap':gaode_hotmap.read_gaode_hotmap_config,
 }
-
+# 地图生成函数字典
 map_func_dict={
         'gaode_marker':gaode_marker.to_gaode_market,
         'baidu_marker':baidu_marker.to_baidu_market,
         'gaode_line':gaode_line.to_gaode_line,
         'gaode_big_marker':gaode_big_marker.to_gaode_big_marker,
         'gaode_marker_agg':gaode_marker_agg.to_gaode_marker_agg,
+        'gaode_hotmap':gaode_hotmap.to_gaode_hotmap,
 }
 
 
@@ -51,7 +55,7 @@ def generate_map(f_type,file_path,new_file_path,data,user_ip):
 
     print(data)
     # 读取地图配置文件
-    map_config=config_func_dict[data['map_type']]()
+    map_config=config_func_dict[data['map_type']](data)
     
     # 处理文件
     if f_type == 'file':
