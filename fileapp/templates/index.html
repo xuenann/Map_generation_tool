@@ -455,30 +455,38 @@
                 
                 if (data.generated_files && Array.isArray(data.generated_files)) {
                     if (data.generated_files.length > 0) {
-                        // 添加一键下载所有文件按钮
-                        const downloadAllBtn = document.createElement("button");
-                        downloadAllBtn.textContent = "一键下载所有文件";
-                        downloadAllBtn.onclick = () => {
-                            // 创建一个临时的a标签用于下载
-                            const tempLink = document.createElement("a");
-                            tempLink.href = "/uploads/127.0.0.1/map.zip";
-                            tempLink.download = "map.zip"; // 指定下载的文件名
-                            tempLink.style.display = "none";
-                            document.body.appendChild(tempLink);
-                            tempLink.click();
-                            document.body.removeChild(tempLink);
-                        };
-                        downloadAllBtn.style.marginBottom = "10px";
-                        
-                        // 检查是否已经存在一键下载按钮，如果存在则移除
-                        const existingDownloadAllBtn = generatedFilesDiv.querySelector("button[onclick*='map.zip']");
-                        if (existingDownloadAllBtn) {
-                            existingDownloadAllBtn.remove();
+                        // 添加一键下载所有文件按钮 - 只有上传文件夹时才显示
+                        if (data.upload_type === 'folder') {
+                            const downloadAllBtn = document.createElement("button");
+                            downloadAllBtn.textContent = "一键下载所有文件";
+                            downloadAllBtn.onclick = () => {
+                                // 创建一个临时的a标签用于下载
+                                const tempLink = document.createElement("a");
+                                tempLink.href = "/uploads/127.0.0.1/map.zip";
+                                tempLink.download = "map.zip"; // 指定下载的文件名
+                                tempLink.style.display = "none";
+                                document.body.appendChild(tempLink);
+                                tempLink.click();
+                                document.body.removeChild(tempLink);
+                            };
+                            downloadAllBtn.style.marginBottom = "10px";
+                            
+                            // 检查是否已经存在一键下载按钮，如果存在则移除
+                            const existingDownloadAllBtn = generatedFilesDiv.querySelector("button[onclick*='map.zip']");
+                            if (existingDownloadAllBtn) {
+                                existingDownloadAllBtn.remove();
+                            }
+                            
+                            // 在h3标签后插入一键下载按钮
+                            const h3 = generatedFilesDiv.querySelector("h3");
+                            h3.insertAdjacentElement("afterend", downloadAllBtn);
+                        } else {
+                            // 如果是单个文件上传，移除一键下载按钮（如果存在）
+                            const existingDownloadAllBtn = generatedFilesDiv.querySelector("button[onclick*='map.zip']");
+                            if (existingDownloadAllBtn) {
+                                existingDownloadAllBtn.remove();
+                            }
                         }
-                        
-                        // 在h3标签后插入一键下载按钮
-                        const h3 = generatedFilesDiv.querySelector("h3");
-                        h3.insertAdjacentElement("afterend", downloadAllBtn);
                         
                         data.generated_files.forEach(file => {
                             const li = document.createElement("li");

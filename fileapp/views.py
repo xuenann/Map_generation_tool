@@ -233,7 +233,8 @@ def generate_map(request):
                     return JsonResponse({
                         'message': f'{map_type_en_cn.get(map_type, map_type)}   地图生成成功！\n文件已生成: \n{os.path.basename(new_file_path)}',
                         'new_file_path': new_file_path,
-                        'generated_files': generated_files
+                        'generated_files': generated_files,
+                        'upload_type': 'file'  # 标识为单个文件上传
                     })
                 else:
                     return JsonResponse({
@@ -273,7 +274,8 @@ def generate_map(request):
                         'new_folder_path': new_folder_path,
                         'modified_files': data['folder_path'],
                         'total_modified': len(data['folder_path']),
-                        'generated_files': generated_files
+                        'generated_files': generated_files,
+                        'upload_type': 'folder'  # 标识为文件夹上传
                     })
                 else:
                     return JsonResponse({
