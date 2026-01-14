@@ -1,0 +1,6 @@
+# 项目依赖列表
+# Django版本从settings.py中获取
+Django==5.2.8
+
+# 坐标转换库（用于CGCS2000坐标系转换）
+pyproj>=3.0.0
