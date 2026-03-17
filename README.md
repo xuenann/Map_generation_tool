@@ -146,7 +146,17 @@ pip install -r requirements.txt
 > pip install django
 > ```
 
-3. **配置API密钥**
+3. **创建数据库表及收集静态文件**
+
+```bash
+# 创建数据库表
+python manage.py migrate
+
+# 收集静态文件
+python manage.py collectstatic
+```
+
+4. **配置API密钥**
 
 编辑 `myproject/settings.py` 文件，配置地图API密钥：
 
@@ -155,13 +165,13 @@ GAODE_API_KEY = 'your_gaode_api_key'  # 高德地图API密钥
 BAIDU_API_KEY = 'your_baidu_api_key'  # 百度地图API密钥
 ```
 
-4. **运行开发服务器**
+5. **运行开发服务器**
 
 ```bash
 python manage.py runserver
 ```
 
-5. **访问应用**
+6. **访问应用**
 
 在浏览器中访问：`http://127.0.0.1:8000/`
 
@@ -184,37 +194,45 @@ python manage.py runserver
 
 ```python
 Map_generation_tool/
-├── fileapp/
-│   ├── map_function/          # 地图生成功能模块
-│   │   ├── baidu_marker.py     # 百度点标记
-│   │   ├── gaode_big_marker.py # 高德海量点标记
-│   │   ├── gaode_hotmap.py     # 高德热力图
-│   │   ├── gaode_line.py       # 高德线图
-│   │   ├── gaode_marker.py     # 高德点标记
-│   │   └── gaode_marker_agg.py # 高德点聚合
-│   ├── migrations/            # 数据库迁移文件
-│   ├── templates/             # HTML模板和样例
-│   │   ├── baidu_marker/      # 百度点标记模板
-│   │   ├── gaode_big_marker/  # 高德海量点标记模板
-│   │   ├── gaode_hotmap/      # 高德热力图模板
-│   │   ├── gaode_line/        # 高德线图模板
-│   │   ├── gaode_marker/      # 高德点标记模板
-│   │   └── gaode_marker_agg/  # 高德点聚合模板
-│   ├── coordinate_transform.py # 坐标转换工具
-│   ├── models.py              # 数据模型
-│   ├── tomap.py               # 地图生成核心逻辑
-│   ├── urls.py                # 路由配置
-│   └── views.py               # 视图函数
-├── myproject/                 # Django项目配置
-│   ├── settings.py            # 项目设置
-│   ├── urls.py                # 主路由
-│   └── wsgi.py                # WSGI配置
-├── test/                      # 测试数据
-├── .gitignore                 # Git忽略文件
-├── LICENSE                    # 许可证
-├── README.md                  # 项目说明
-├── db.sqlite3                 # SQLite数据库
-└── manage.py                  # Django管理脚本
+├── fileapp/                      # Django应用
+│   ├── map_function/             # 地图生成功能模块
+│   │   ├── baidu_marker.py       # 百度点标记
+│   │   ├── gaode_big_marker.py   # 高德海量点标记
+│   │   ├── gaode_hotmap.py       # 高德热力图
+│   │   ├── gaode_line.py         # 高德线图
+│   │   ├── gaode_marker.py       # 高德点标记
+│   │   └── gaode_marker_agg.py   # 高德点聚合
+│   ├── migrations/               # 数据库迁移文件
+│   ├── templates/                # HTML模板和配置文件
+│   │   ├── baidu_marker/         # 百度点标记模板
+│   │   ├── gaode_big_marker/     # 高德海量点标记模板
+│   │   ├── gaode_hotmap/         # 高德热力图模板
+│   │   ├── gaode_html_test/      # 高德测试模板
+│   │   ├── gaode_line/           # 高德线图模板
+│   │   ├── gaode_marker/         # 高德点标记模板
+│   │   ├── gaode_marker_agg/     # 高德点聚合模板
+│   │   ├── index.html            # 主页面
+│   │   └── login.html            # 登录页面
+│   ├── static/                   # 静态文件
+│   │   └── login/                # 登录页静态资源
+│   ├── uploads/                 # 上传文件存储目录（不提交到git）
+│   ├── admin.py                  # Django admin配置
+│   ├── apps.py                   # 应用配置
+│   ├── coordinate_transform.py  # 坐标转换工具
+│   ├── models.py                 # 数据模型
+│   ├── tests.py                  # 单元测试
+│   ├── tomap.py                  # 地图生成核心逻辑
+│   ├── urls.py                   # 路由配置
+│   └── views.py                  # 视图函数
+├── myproject/                   # Django项目配置
+│   ├── settings.py              # 项目设置
+│   ├── urls.py                  # 主路由
+│   └── wsgi.py                  # WSGI配置
+├── .gitignore                   # Git忽略文件
+├── LICENSE                      # 许可证
+├── README.md                    # 项目说明
+├── manage.py                    # Django管理脚本
+└── requirements.txt             # Python依赖
 ```
 
 
