@@ -1,6 +1,9 @@
 # 数据库文件
 db.sqlite3
 
+# Django 收集的静态文件（生产环境）
+staticfiles/
+
 # 临时处理数据文件夹
 fileapp/uploads/
 
