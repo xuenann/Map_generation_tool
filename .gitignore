@@ -1,3 +1,6 @@
+# 数据库文件
+db.sqlite3
+
 # 临时处理数据文件夹
 fileapp/uploads/
 

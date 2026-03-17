@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>登录 - 地图生成工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .login-container {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            display: flex;
+            width: 800px;
+            max-width: 90vw;
+            overflow: hidden;
+        }
+        .left-section {
+            width: 50%;
+            padding: 40px;
+            background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-right: 1px solid #dee2e6;
+        }
+        .qrcode-container {
+            margin-bottom: 25px;
+        }
+        .qrcode-container img {
+            width: 200px;
+            height: 200px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .qrcode-text {
+            color: #495057;
+            font-size: 14px;
+            text-align: center;
+            line-height: 1.6;
+            padding: 0 20px;
+        }
+        .right-section {
+            width: 50%;
+            padding: 50px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .right-section h2 {
+            color: #333;
+            margin-bottom: 35px;
+            font-size: 28px;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 25px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+            outline: none;
+        }
+        .form-group input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        .error-message {
+            color: #e74c3c;
+            font-size: 13px;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+        }
+        @media (max-width: 768px) {
+            .login-container {
+                flex-direction: column;
+                width: 95%;
+            }
+            .left-section, .right-section {
+                width: 100%;
+            }
+            .left-section {
+                padding: 30px;
+                border-right: none;
+                border-bottom: 1px solid #dee2e6;
+            }
+            .qrcode-container img {
+                width: 150px;
+                height: 150px;
+            }
+            .right-section {
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="left-section">
+            <div class="qrcode-container">
+                <img src="/static/login/qrcode_for_gh_8be4598ab15d_1280.jpg" alt="公众号二维码">
+            </div>
+            <p class="qrcode-text">请关注公众号：南墨的技术小栈</p>
+            <p class="qrcode-text">回复"地图生成工具"获取账号密码</p>
+        </div>
+        <div class="right-section">
+            <h2>用户登录</h2>
+            <form method="POST" action="/login/" id="login-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="username">用户名</label>
+                    <input type="text" id="username" name="username" required placeholder="请输入用户名">
+                </div>
+                <div class="form-group">
+                    <label for="password">密码</label>
+                    <input type="password" id="password" name="password" required placeholder="请输入密码">
+                </div>
+                <button type="submit" class="login-btn" onclick="this.innerText='登录中...'">登录</button>
+                <p class="error-message" id="error-message" style="display: block; color: red;">{{ error }}</p>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
