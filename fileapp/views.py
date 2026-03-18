@@ -36,6 +36,7 @@ def login(request):
         if username in VALID_USERS and VALID_USERS[username] == password:
             request.session["is_logged_in"] = True
             request.session["username"] = username
+            request.session.set_expiry(0)
             print("Login successful, redirecting to /")
             from django.shortcuts import redirect
 
@@ -43,11 +44,6 @@ def login(request):
         else:
             print("Login failed, rendering login page with error")
             return render(request, "login.html", {"error": "用户名或密码错误"})
-
-    if request.session.get("is_logged_in"):
-        from django.shortcuts import redirect
-
-        return redirect("/")
 
     return render(request, "login.html")
 
