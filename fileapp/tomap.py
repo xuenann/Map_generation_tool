@@ -131,10 +131,10 @@ def deal_data(file_path,data):
             if data['ignore_first_row'] == 'yes':
                 next(reader)
             for row in reader:
-                lat,lon=coordinate_func_dict.get(
+                lon,lat=coordinate_func_dict.get(
                     f"{data['coordinate_system']}_{data['map_type'].split('_')[0]}",lambda x,y:(x,y))(
-                                float(row[index_list['latitude_column']]),
-                                float(row[index_list['longitude_column']])) 
+                                float(row[index_list['longitude_column']]),
+                                float(row[index_list['latitude_column']])) 
 
                 map_data.append({'lat':round(lat,6),'lon':round(lon,6)} | {k:row[index_list[k]] for k in index_list if k not in ['latitude_column','longitude_column']})
                 

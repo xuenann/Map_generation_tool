@@ -286,4 +286,5 @@ def mapbar_to_cgcs2000_3deg(lon, lat):
 
 
 
-
+if __name__=='__main__':
+    print(wgs84_to_gcj02(113.775723,37.80594))
